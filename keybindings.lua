@@ -64,7 +64,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
     awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ),
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
-    awful.key({ modkey, 'Shift'   }, "Escape", function() awful.util.spawn('xlock') end),
+    awful.key({ modkey, 'Shift'   }, "Escape", function() awful.util.spawn('sflock') end),
     awful.key({                   }, "XF86Sleep", function() awful.util.spawn('gksudo pm-suspend') end),
     awful.key({                   }, "XF86Suspend", function() awful.util.spawn('gksudo pm-suspend') end),
 

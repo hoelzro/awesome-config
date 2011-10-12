@@ -2,6 +2,14 @@ local awful = require 'awful'
 local rmatch = require('rex_pcre').match
 local amixerpattern = '\\[(\\d{1,3})%\\].*\\[(on|off)\\]'
 
+local function get_mixer_state()
+  local pipe   = assert(io.popen 'amixer get Master')
+  local output = pipe:read '*a'
+  pipe:close()
+
+  return rmatch(output, amixerpattern)
+end
+
 local volume_icon_base = '/usr/share/icons/gnome/24x24/status/'
 local function louder()
     local volume = get_mixer_state()
@@ -50,14 +58,6 @@ local function togglemute()
         icon  = volume_icon_base .. 'stock_volume-max.png'
       }
     end
-end
-
-local function get_mixer_state()
-  local pipe   = assert(io.popen 'amixer get Master')
-  local output = pipe:read '*a'
-  pipe:close()
-
-  return rmatch(output, amixerpattern)
 end
 
 globalkeys = awful.util.table.join(

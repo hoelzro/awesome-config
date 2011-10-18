@@ -1,61 +1,41 @@
-local awful = require 'awful'
-local rmatch = require('rex_pcre').match
-local amixerpattern = '\\[(\\d{1,3})%\\].*\\[(on|off)\\]'
-
-local function get_mixer_state()
-  local pipe   = assert(io.popen 'amixer get Master')
-  local output = pipe:read '*a'
-  pipe:close()
-
-  return rmatch(output, amixerpattern)
-end
+local awful  = require 'awful'
+local volume = require 'volume'
 
 local volume_icon_base = '/usr/share/icons/gnome/24x24/status/'
 local function louder()
-    local volume = get_mixer_state()
-    volume = volume + 5
-    if volume > 100 then
-      volume = 100
-    end
-    os.execute('amixer set Master ' .. volume .. '%')
+    local volume = volume.increment()
 
     naughty.notify {
       title = 'Volume Changed',
-      text  = volume .. '%',
+      text  = tostring(volume) .. '%',
       icon  = volume_icon_base .. 'stock_volume-max.png'
     }
 end
 
 local function quieter()
-    local volume = get_mixer_state()
-    volume = volume - 5
-    if volume < 0 then
-      volume = 0
-    end
-    os.execute('amixer set Master ' .. volume .. '%')
+    local volume = volume.decrement()
+
     naughty.notify {
       title = 'Volume Changed',
-      text  = volume .. '%',
+      text  = tostring(volume) .. '%',
       icon  = volume_icon_base .. 'stock_volume-min.png'
     }
 end
 
 local function togglemute()
-    local _, state = get_mixer_state()
+    local state = volume.toggle()
 
-    if state == 'on' then
-      os.execute('amixer set Master mute')
-      naughty.notify {
-        title = 'Volume Changed',
-        text  = 'Muted',
-        icon  = volume_icon_base .. 'stock_volume-mute.png'
-      }
-    else
-      os.execute('amixer set Master unmute')
+    if state then
       naughty.notify {
         title = 'Volume Changed',
         text  = 'Unmuted',
         icon  = volume_icon_base .. 'stock_volume-max.png'
+      }
+    else
+      naughty.notify {
+        title = 'Volume Changed',
+        text  = 'Muted',
+        icon  = volume_icon_base .. 'stock_volume-mute.png'
       }
     end
 end

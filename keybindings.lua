@@ -68,6 +68,7 @@ globalkeys = awful.util.table.join(
     awful.key({                   }, "XF86Sleep", function() awful.util.spawn('gksudo pm-suspend') end),
     awful.key({                   }, "XF86Suspend", function() awful.util.spawn('gksudo pm-suspend') end),
     awful.key({ modkey,           }, "q", function() awful.util.spawn('keepassx') end),
+    awful.key({ modkey,           }, "`", function() awful.util.spawn('disper -e') end),
 
     awful.key({                   }, "XF86AudioRaiseVolume", louder),
     awful.key({                   }, "XF86AudioLowerVolume", quieter),

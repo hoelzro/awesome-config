@@ -23,9 +23,10 @@ local function louder()
     local volume = volume.increment()
 
     do_volume_notification {
-      title = 'Volume Changed',
-      text  = tostring(volume) .. '%',
-      icon  = 'stock_volume-max.png'
+      title   = 'Volume Changed',
+      text    = tostring(volume) .. '%',
+      icon    = 'stock_volume-max.png',
+      opacity = volume / 100,
     }
 end
 
@@ -33,9 +34,10 @@ local function quieter()
     local volume = volume.decrement()
 
     do_volume_notification {
-      title = 'Volume Changed',
-      text  = tostring(volume) .. '%',
-      icon  = 'stock_volume-min.png'
+      title   = 'Volume Changed',
+      text    = tostring(volume) .. '%',
+      icon    = 'stock_volume-min.png',
+      opacity = volume / 100,
     }
 end
 

@@ -1,24 +1,41 @@
 local awful  = require 'awful'
 local volume = require 'volume'
 
-local volume_icon_base = '/usr/share/icons/gnome/24x24/status/'
+local do_volume_notification
+do
+  local volume_icon_base = '/usr/share/icons/gnome/24x24/status/'
+  local volume_notification
+
+  do_volume_notification = function(args)
+    if args.icon then
+      args.icon = volume_icon_base .. args.icon
+    end
+
+    if volume_notification and volume_notification.box.screen then
+      args.replaces_id = volume_notification.id
+    end
+
+    volume_notification = naughty.notify(args)
+  end
+end
+
 local function louder()
     local volume = volume.increment()
 
-    naughty.notify {
+    do_volume_notification {
       title = 'Volume Changed',
       text  = tostring(volume) .. '%',
-      icon  = volume_icon_base .. 'stock_volume-max.png'
+      icon  = 'stock_volume-max.png'
     }
 end
 
 local function quieter()
     local volume = volume.decrement()
 
-    naughty.notify {
+    do_volume_notification {
       title = 'Volume Changed',
       text  = tostring(volume) .. '%',
-      icon  = volume_icon_base .. 'stock_volume-min.png'
+      icon  = 'stock_volume-min.png'
     }
 end
 
@@ -26,16 +43,16 @@ local function togglemute()
     local state = volume.toggle()
 
     if state then
-      naughty.notify {
+      do_volume_notification {
         title = 'Volume Changed',
         text  = 'Unmuted',
-        icon  = volume_icon_base .. 'stock_volume-max.png'
+        icon  = 'stock_volume-max.png'
       }
     else
-      naughty.notify {
+      do_volume_notification {
         title = 'Volume Changed',
         text  = 'Muted',
-        icon  = volume_icon_base .. 'stock_volume-mute.png'
+        icon  = 'stock_volume-mute.png'
       }
     end
 end

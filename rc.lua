@@ -15,6 +15,7 @@ require 'local-loader'
 require 'awful.autofocus'
 require 'naughty'
 
+require 'naughty-screen'
 require 'startup-programs'
 require 'theme'
 require 'tags'

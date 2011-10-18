@@ -89,8 +89,8 @@ for s = 1, screen.count() do
             layout = awful.widget.layout.horizontal.leftright
         },
         mylayoutbox[s],
-        s == 1 and obvious.clock() or nil,
-        s == 1 and mysystray or nil,
+        s == preferred_screen and obvious.clock() or nil,
+        s == preferred_screen and mysystray or nil,
         mytasklist[s],
         layout = awful.widget.layout.horizontal.rightleft
     }

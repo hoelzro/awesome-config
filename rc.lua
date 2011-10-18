@@ -4,10 +4,11 @@
 - List keybindings?
 ]]
 
-modkey     = "Mod1"
-terminal   = "xterm"
-editor     = os.getenv("EDITOR") or "vim"
-editor_cmd = terminal .. " -e " .. editor
+modkey           = "Mod1"
+terminal         = "xterm"
+editor           = os.getenv("EDITOR") or "vim"
+editor_cmd       = terminal .. " -e " .. editor
+preferred_screen = screen.count()
 
 require 'local-loader'
 

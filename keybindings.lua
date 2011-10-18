@@ -47,14 +47,14 @@ local function togglemute()
     if state then
       do_volume_notification {
         title = 'Volume Changed',
-        text  = 'Unmuted',
-        icon  = 'stock_volume-max.png'
+        text  = 'Muted',
+        icon  = 'stock_volume-mute.png'
       }
     else
       do_volume_notification {
         title = 'Volume Changed',
-        text  = 'Muted',
-        icon  = 'stock_volume-mute.png'
+        text  = 'Unmuted',
+        icon  = 'stock_volume-max.png'
       }
     end
 end

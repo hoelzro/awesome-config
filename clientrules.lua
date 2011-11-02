@@ -11,7 +11,7 @@ awful.rules.rules = {
                      buttons = clientbuttons,
                      floating = false } },
     { rule = { class = "Chromium" },
-      properties = { tag = tags[preferred_screen][1] } },
+      properties = { tag = tags[preferred_screen][1], keys = chromiumkeys } },
     { rule = { class = "Firefox" },
       properties = { tag = tags[preferred_screen][9] } },
     { rule = { class = "Claws-mail" },

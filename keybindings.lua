@@ -138,6 +138,12 @@ clientkeys = awful.util.table.join(
         end)
 )
 
+chromiumkeys = awful.util.table.join(
+  clientkeys,
+  awful.key({ 'Shift', 'Control' }, 'q', function()
+  end)
+)
+
 local keynumber = 0
 for s = 1, screen.count() do
    keynumber = math.min(9, math.max(#tags[s], keynumber));

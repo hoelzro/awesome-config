@@ -17,6 +17,15 @@ awful.rules.rules = {
     { rule = { class = "Claws-mail" },
       properties = { tag = tags[preferred_screen][3] } },
 
+    { rule       = { class = 'Gajim.py' },
+      properties = { tag = chat_tag },
+      callback   = awful.client.setslave },
+
+    { rule       = { class = 'Gajim.py', role = 'roster' },
+      properties = { },
+      callback   = awful.client.setmaster },
+
+
     { rule       = { class = 'XTerm' },
       properties = {},
       callback   = function(client)

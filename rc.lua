@@ -23,3 +23,11 @@ require 'widgets'
 require 'mousebindings'
 require 'keybindings'
 require 'clientrules'
+
+-- shortcut for naughty.notify
+function alert(msg)
+  naughty.notify {
+    title = 'Alert!',
+    text  = tostring(msg),
+  }
+end

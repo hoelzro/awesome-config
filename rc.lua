@@ -1,6 +1,5 @@
 --[[
 - Expose?
-- Key chords
 - List keybindings?
 ]]
 

@@ -9,6 +9,19 @@ editor           = os.getenv("EDITOR") or "vim"
 editor_cmd       = terminal .. " -e " .. editor
 preferred_screen = screen.count()
 
+do
+  local maxindex
+
+  for i = 1, screen.count() do
+    local s = screen[i]
+    if not maxindex or s.geometry.x > screen[maxindex].geometry.x then
+      maxindex = i
+    end
+  end
+
+  preferred_screen = maxindex
+end
+
 require 'local-loader'
 
 require 'awful.autofocus'

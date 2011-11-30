@@ -92,10 +92,12 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "u", awful.client.urgent.jumpto),
     awful.key({ modkey,           }, "Tab",
         function ()
-            awful.client.focus.history.previous()
-            if client.focus then
-                client.focus:raise()
-            end
+          local currentscreen = client.focus.screen
+          local newscreen     = currentscreen + 1
+          if newscreen > screen.count() then
+            newscreen = 1
+          end
+          awful.screen.focus(newscreen)
         end),
 
     awful.key({ modkey,           }, "e", function () awful.util.spawn(terminal) end),

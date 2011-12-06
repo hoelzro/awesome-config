@@ -59,6 +59,9 @@ local function togglemute()
     end
 end
 
+local function noop()
+end
+
 globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
     awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ),
@@ -142,8 +145,7 @@ clientkeys = awful.util.table.join(
 
 chromiumkeys = awful.util.table.join(
   clientkeys,
-  awful.key({ 'Shift', 'Control' }, 'q', function()
-  end)
+  awful.key({ 'Shift', 'Control' }, 'q', noop)
 )
 
 local keynumber = 0

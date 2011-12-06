@@ -145,7 +145,8 @@ clientkeys = awful.util.table.join(
 
 chromiumkeys = awful.util.table.join(
   clientkeys,
-  awful.key({ 'Shift', 'Control' }, 'q', noop)
+  awful.key({ 'Shift', 'Control' }, 'q', noop),
+  awful.key({          'Control' }, 'd', noop)
 )
 
 local keynumber = 0

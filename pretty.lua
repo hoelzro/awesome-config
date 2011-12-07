@@ -75,7 +75,7 @@ local function helper(v, chunks, indent)
           chunks[#chunks + 1] = ']'
         end
         chunks[#chunks + 1] = ' = '
-        helper(k, chunks, indent + 1)
+        helper(v, chunks, indent + 1)
         chunks[#chunks + 1] = ',\n'
       end
     end

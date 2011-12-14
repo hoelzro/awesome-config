@@ -1,6 +1,6 @@
 require 'awful.rules'
 
-local chat_tag = tags[preferred_screen][4]
+local chat_tag = tags[left_screen][4]
 
 awful.rules.rules = {
     { rule = { },

@@ -27,4 +27,4 @@ for s = 1, screen.count() do
     })
 end
 
-awful.tag.setmwfact(0.20, tags[preferred_screen][4])
+awful.tag.setmwfact(0.20, tags[left_screen][4])

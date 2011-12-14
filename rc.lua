@@ -7,19 +7,24 @@ modkey           = "Mod1"
 terminal         = "xterm"
 editor           = os.getenv("EDITOR") or "vim"
 editor_cmd       = terminal .. " -e " .. editor
-preferred_screen = screen.count()
 
 do
   local maxindex
+  local minindex
 
   for i = 1, screen.count() do
     local s = screen[i]
     if not maxindex or s.geometry.x > screen[maxindex].geometry.x then
       maxindex = i
     end
+    if not minindex or s.geometry.x < screen[minindex].geometry.x then
+      minindex = i
+    end
   end
 
   preferred_screen = maxindex
+  left_screen      = minindex
+  right_screen     = maxindex
 end
 
 require 'local-loader'

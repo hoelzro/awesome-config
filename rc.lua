@@ -68,3 +68,20 @@ function alert(msg)
     text  = tostring(msg),
   }
 end
+
+function dir(object, pattern)
+  object     = object or _G
+  local keys = {}
+
+  for k in pairs(object) do
+    if type(k) == 'string' then
+      if not pattern or k:match(pattern) then
+        keys[#keys + 1] = k
+      end
+    end
+  end
+
+  table.sort(keys)
+
+  alert(table.concat(keys, '\n'))
+end

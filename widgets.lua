@@ -3,9 +3,28 @@
 -- MPD
 -- Irssi
 
+require 'obvious.battery'
 require 'obvious.clock'
 require 'obvious.cpu'
 require 'obvious.mem'
+
+local has_battery
+
+do
+  local found_battery
+
+  function has_battery()
+    if found_battery == nil then
+      local pipe   = io.popen 'acpi'
+      local output = pipe:read '*a'
+      pipe:close()
+
+      found_battery = not not string.match(output, '^Battery 0') -- force true/false
+    end
+
+    return found_battery
+  end
+end
 
 obvious.clock.set_editor(editor_cmd)
 obvious.clock.set_shortformat '%a %b %d %T'
@@ -91,6 +110,7 @@ for s = 1, screen.count() do
         mylayoutbox[s],
         s == preferred_screen and obvious.clock() or nil,
         s == preferred_screen and mysystray or nil,
+        (s == preferred_screen and has_battery()) and obvious.battery() or nil,
         mytasklist[s],
         layout = awful.widget.layout.horizontal.rightleft
     }

@@ -62,6 +62,45 @@ end
 local function noop()
 end
 
+local lower_brightness
+local raise_brightness
+
+do
+  local brightness_level = 100
+
+  function lower_brightness()
+    local step = math.floor(65535 / 20) -- 5%
+    os.execute('xbrightness -' .. tostring(step))
+
+    brightness_level = brightness_level - 5
+    if brightness_level < 0 then
+      brightness_level = 0
+    end
+
+    -- I know, not volume...
+    do_volume_notification {
+      title = 'Brightness Changed',
+      text  = tostring(brightness_level) .. '%'
+    }
+  end
+
+  function raise_brightness()
+    local step = math.floor(65535 / 20) -- 5%
+    os.execute('xbrightness +' .. tostring(step))
+
+    brightness_level = brightness_level + 5
+    if brightness_level > 100 then
+      brightness_level = 100
+    end
+
+    -- I know, not volume...
+    do_volume_notification {
+      title = 'Brightness Changed',
+      text  = tostring(brightness_level) .. '%'
+    }
+  end
+end
+
 globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
     awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ),
@@ -75,6 +114,9 @@ globalkeys = awful.util.table.join(
     awful.key({                   }, "XF86AudioRaiseVolume", louder),
     awful.key({                   }, "XF86AudioLowerVolume", quieter),
     awful.key({                   },        "XF86AudioMute", togglemute),
+
+    awful.key({                   }, 'XF86MonBrightnessDown', lower_brightness),
+    awful.key({                   }, 'XF86MonBrightnessUp', raise_brightness),
 
     awful.key({ modkey,           }, "j",
         function ()

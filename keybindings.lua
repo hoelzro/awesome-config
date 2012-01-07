@@ -115,6 +115,8 @@ globalkeys = awful.util.table.join(
     awful.key({                   }, "XF86AudioLowerVolume", quieter),
     awful.key({                   },        "XF86AudioMute", togglemute),
 
+    awful.key({                   }, 'XF86Back', awful.tag.viewprev),
+    awful.key({                   }, 'XF86Forward', awful.tag.viewnext),
     awful.key({                   }, 'XF86MonBrightnessDown', lower_brightness),
     awful.key({                   }, 'XF86MonBrightnessUp', raise_brightness),
 

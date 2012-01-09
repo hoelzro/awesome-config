@@ -119,7 +119,7 @@ globalkeys = awful.util.table.join(
     awful.key({                   }, 'XF86Forward', awful.tag.viewnext),
     awful.key({                   }, 'XF86MonBrightnessDown', lower_brightness),
     awful.key({                   }, 'XF86MonBrightnessUp', raise_brightness),
-    awful.key({                   }, 'XF86ScreenSaver', awful.util.spawn('slimlock') end),
+    awful.key({                   }, 'XF86ScreenSaver', function() awful.util.spawn('slimlock') end),
 
     awful.key({ modkey,           }, "j",
         function ()

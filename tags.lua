@@ -6,24 +6,26 @@ layouts = {
     awful.layout.suit.tile.bottom,
     awful.layout.suit.tile.top,
 
-    awful.layout.suit.fair,
-    awful.layout.suit.fair.horizontal,
     awful.layout.suit.max,
     awful.layout.suit.floating,
 }
 
+layouts.default    = layouts[1]
+layouts.tilebottom = layouts[3]
+layouts.max        = layouts[5]
+
 tags = {}
 for s = 1, screen.count() do
     tags[s] = awful.tag({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, s, {
-      layouts[7],
-      layouts[1],
-      layouts[3],
-      layouts[1],
-      layouts[7],
-      layouts[1],
-      layouts[1],
-      layouts[1],
-      layouts[1],
+      layouts.max,
+      layouts.default,
+      layouts.tilebottom,
+      layouts.default,
+      layouts.max,
+      layouts.default,
+      layouts.default,
+      layouts.default,
+      layouts.default,
     })
 end
 

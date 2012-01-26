@@ -1,8 +1,8 @@
 -- Google Reader
 -- Mail
--- MPD
 -- Irssi
 
+require 'obvious.basic_mpd'
 require 'obvious.battery'
 require 'obvious.clock'
 require 'obvious.cpu'
@@ -30,6 +30,8 @@ obvious.clock.set_editor(editor_cmd)
 obvious.clock.set_shortformat '%a %b %d %T'
 obvious.clock.set_longformat(function() return '%a %b %d %T' end)
 obvious.clock.set_shorttimer(1)
+
+obvious.basic_mpd.set_format '$artist - $title'
 
 local myawesomemenu = {
    { "manual", terminal .. " -e man awesome" },
@@ -111,6 +113,7 @@ for s = 1, screen.count() do
         s == preferred_screen and obvious.clock() or nil,
         s == preferred_screen and mysystray or nil,
         (s == preferred_screen and has_battery()) and obvious.battery() or nil,
+        s == preferred_screen and obvious.basic_mpd() or nil,
         mytasklist[s],
         layout = awful.widget.layout.horizontal.rightleft
     }

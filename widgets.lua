@@ -1,5 +1,4 @@
 -- Google Reader
--- Mail
 -- Irssi
 
 require 'obvious.basic_mpd'

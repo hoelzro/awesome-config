@@ -33,6 +33,12 @@ obvious.clock.set_shorttimer(1)
 
 obvious.basic_mpd.set_format '$artist - $title'
 
+obvious.basic_mpd():buttons(awful.util.table.join(
+  awful.button({ }, 1, function() obvious.basic_mpd.connection:toggle_play() end),
+  awful.button({ }, 4, function() obvious.basic_mpd.connection:next() end),
+  awful.button({ }, 5, function() obvious.basic_mpd.connection:previous() end)
+))
+
 local myawesomemenu = {
    { "manual", terminal .. " -e man awesome" },
    { "edit config", editor_cmd .. " " .. awful.util.getdir("config") .. "/rc.lua" },

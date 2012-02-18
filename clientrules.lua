@@ -13,7 +13,7 @@ awful.rules.rules = {
     { rule = { class = "Chromium" },
       properties = { tag = tags[preferred_screen][1], keys = chromiumkeys } },
     { rule = { class = "Firefox" },
-      properties = { tag = tags[preferred_screen][9] } },
+      properties = { tag = tags[preferred_screen][1] } },
     { rule = { class = "Claws-mail" },
       properties = { tag = tags[preferred_screen][3] } },
 

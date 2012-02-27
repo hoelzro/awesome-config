@@ -6,6 +6,7 @@ require 'obvious.battery'
 require 'obvious.clock'
 require 'obvious.cpu'
 require 'obvious.mem'
+require 'obvious.temp_info'
 
 local has_battery
 
@@ -118,6 +119,7 @@ for s = 1, screen.count() do
         s == preferred_screen and obvious.clock() or nil,
         s == preferred_screen and mysystray or nil,
         (s == preferred_screen and has_battery()) and obvious.battery() or nil,
+        s == preferred_screen and obvious.temp_info() or nil,
         s == preferred_screen and obvious.basic_mpd() or nil,
         mytasklist[s],
         layout = awful.widget.layout.horizontal.rightleft

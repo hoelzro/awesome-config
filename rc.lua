@@ -3,6 +3,33 @@
 - List keybindings?
 ]]
 
+local function splitpath(path)
+  local patterns = {}
+  for m in string.gmatch(path, '[^;]+') do
+    patterns[#patterns + 1] = m
+  end
+  return patterns
+end
+
+local function filter(t, predicate)
+  local filtered = {}
+
+  for _, value in ipairs(t) do
+    if predicate(value) then
+      filtered[#filtered + 1] = value
+    end
+  end
+
+  return filtered
+end
+
+local function remove_local_path(path)
+  return not string.match(path, '^%./')
+end
+
+package.path  = table.concat(filter(splitpath(package.path), remove_local_path), ';')
+package.cpath = table.concat(filter(splitpath(package.cpath), remove_local_path), ';')
+
 modkey           = "Mod1"
 terminal         = "xterm"
 editor           = os.getenv("EDITOR") or "vim"

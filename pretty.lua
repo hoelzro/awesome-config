@@ -13,7 +13,6 @@ local ok, term = pcall(require, 'term')
 if not ok then
   term = nil
 end
-print(term)
 
 local pretty = {}
 

@@ -70,7 +70,7 @@ require 'clientrules'
 
 -- don't consider scripts in my private
 -- files for tab completion
-local posix = require 'posix'
+local _, posix = pcall(require, 'posix')
 local home  = os.getenv 'HOME'
 local path  = os.getenv 'PATH'
 local paths = {}
@@ -86,7 +86,9 @@ for p in string.gmatch(path, '[^:]+') do
   end
 end
 
-posix.setenv('PATH', table.concat(paths, ':'))
+if type(posix) == 'table' then
+  posix.setenv('PATH', table.concat(paths, ':'))
+end
 
 -- shortcut for naughty.notify
 function alert(msg)

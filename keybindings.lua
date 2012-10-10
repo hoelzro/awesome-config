@@ -104,11 +104,11 @@ end
 local audio = {}
 
 function audio.next()
-  os.execute 'mpc next'
+  os.execute 'tmux send-keys -t pmus:1 l'
 end
 
 function audio.previous()
-  os.execute 'mpc prev'
+  os.execute 'tmux send-keys -t pmus:1 h'
 end
 
 function audio.toggle()

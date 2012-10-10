@@ -101,6 +101,24 @@ do
   end
 end
 
+local audio = {}
+
+function audio.next()
+  os.execute 'mpc next'
+end
+
+function audio.previous()
+  os.execute 'mpc prev'
+end
+
+function audio.toggle()
+  os.execute 'mpc toggle'
+end
+
+function audio.stop()
+  os.execute 'mpc stop'
+end
+
 globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
     awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ),
@@ -114,6 +132,11 @@ globalkeys = awful.util.table.join(
     awful.key({                   }, "XF86AudioRaiseVolume", louder),
     awful.key({                   }, "XF86AudioLowerVolume", quieter),
     awful.key({                   },        "XF86AudioMute", togglemute),
+
+    awful.key({                   },        "XF86AudioNext", audio.next),
+    awful.key({                   },        "XF86AudioPrev", audio.previous),
+    awful.key({                   },        "XF86AudioPlay", audio.toggle),
+    awful.key({                   },        "XF86AudioStop", audio.stop),
 
     awful.key({                   }, 'XF86Back', awful.tag.viewprev),
     awful.key({                   }, 'XF86Forward', awful.tag.viewnext),

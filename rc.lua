@@ -31,7 +31,7 @@ package.path  = table.concat(filter(splitpath(package.path), remove_local_path),
 package.cpath = table.concat(filter(splitpath(package.cpath), remove_local_path), ';')
 
 modkey           = "Mod1"
-terminal         = "xterm"
+terminal         = "urxvt"
 editor           = os.getenv("EDITOR") or "vim"
 editor_cmd       = terminal .. " -e " .. editor
 

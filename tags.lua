@@ -10,6 +10,9 @@ layouts = {
     awful.layout.suit.floating,
 }
 
+awful.layout.suit.tile.left.mirror = true
+awful.layout.suit.tile.top.mirror  = true
+
 layouts.default    = layouts[1]
 layouts.tilebottom = layouts[3]
 layouts.max        = layouts[5]

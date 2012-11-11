@@ -119,6 +119,20 @@ function audio.stop()
   os.execute 'mpc stop'
 end
 
+local function current_layout()
+  return awful.layout.get(client.focus.screen)
+end
+
+local function increase_top_right(factor)
+  local layout = current_layout()
+
+  if layout.mirror then
+    factor = factor * - 1
+  end
+
+  awful.tag.incmwfact(factor)
+end
+
 globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
     awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ),
@@ -175,8 +189,8 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Control" }, "r", awesome.restart),
     awful.key({ modkey, "Shift"   }, "q", awesome.quit),
 
-    awful.key({ modkey,           }, "l",     function () awful.tag.incmwfact( 0.05)    end),
-    awful.key({ modkey,           }, "h",     function () awful.tag.incmwfact(-0.05)    end),
+    awful.key({ modkey,           }, "l",     function () increase_top_right( 0.05)     end),
+    awful.key({ modkey,           }, "h",     function () increase_top_right(-0.05)     end),
     awful.key({ modkey, "Shift"   }, "h",     function () awful.tag.incnmaster( 1)      end),
     awful.key({ modkey, "Shift"   }, "l",     function () awful.tag.incnmaster(-1)      end),
     awful.key({ modkey, "Control" }, "h",     function () awful.tag.incncol( 1)         end),

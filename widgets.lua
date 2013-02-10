@@ -8,6 +8,8 @@ require 'obvious.cpu'
 require 'obvious.mem'
 require 'obvious.temp_info'
 
+local audio = require 'audio'
+
 local has_battery
 
 do
@@ -40,9 +42,9 @@ obvious.clock.set_shorttimer(1)
 obvious.basic_mpd.set_format '$artist - $title'
 
 obvious.basic_mpd():buttons(awful.util.table.join(
-  awful.button({ }, 1, function() obvious.basic_mpd.connection:toggle_play() end),
-  awful.button({ }, 4, function() obvious.basic_mpd.connection:next() end),
-  awful.button({ }, 5, function() obvious.basic_mpd.connection:previous() end)
+  awful.button({ }, 1, function() audio.toggle() end),
+  awful.button({ }, 4, function() audio.next() end),
+  awful.button({ }, 5, function() audio.previous() end)
 ))
 
 local myawesomemenu = {

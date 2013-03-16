@@ -1,12 +1,16 @@
-local rmatch  = require('rex_pcre').match
-local popen   = io.popen
-local execute = os.execute
-local format  = string.format
-local volume  = {}
+local rmatch   = require('rex_pcre').match
+local popen    = io.popen
+local execute  = os.execute
+local format   = string.format
+local gmatch   = string.gmatch
+local tonumber = tonumber
+local volume   = {}
 
-local sinkpattern   = 'Sink\\s*#(\\d+)'
-local mutepattern   = 'Mute:\\s*(yes|no)'
-local volumepattern = 'Volume:\\s*0:\\s*(\\d+)%'
+local sinkpattern   = [[Sink\s*#(\d+)]]
+local mutepattern   = [[Mute:\s*(yes|no)]]
+local volumepattern = [[Volume:\s*0:\s*(\d+)%]]
+
+volume.sinkno = 1
 
 local function slurpcommand(cmd)
   local pipe, error = popen(cmd, 'r')
@@ -19,10 +23,30 @@ local function slurpcommand(cmd)
 end
 
 local function getstate()
-  local sinks  = slurpcommand('pactl list sinks')
-  local sinkno = rmatch(sinks, sinkpattern)
-  local state  = rmatch(sinks, mutepattern)
-  local volume = rmatch(sinks, volumepattern)
+  local sinks = slurpcommand('pactl list sinks')
+
+  local sinkno = volume.sinkno
+  local parsing_sink
+  local state
+  local volume
+
+  for line in gmatch(sinks, '[^\n]+') do
+    local currentsink = rmatch(line, sinkpattern)
+
+    if currentsink then
+      parsing_sink = tonumber(currentsink) == sinkno
+    elseif parsing_sink then
+      local line_state  = rmatch(line, mutepattern)
+      local line_volume = rmatch(line, volumepattern)
+
+      if line_state then
+        state = line_state
+      end
+      if line_volume then
+        volume = line_volume
+      end
+    end
+  end
 
   return sinkno, volume, state ~= 'no'
 end

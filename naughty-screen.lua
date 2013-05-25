@@ -1,3 +1,4 @@
+local naughty = require 'naughty'
 local naughty_defaults = {
   opacity         = 0.75,
   rounded_corners = true,
@@ -11,7 +12,7 @@ naughty.config.opacity         = naughty_defaults.opacity
 naughty.config.rounded_corners = naughty_defaults.rounded_corners
 naughty.config.screen          = naughty_defaults.screen
 naughty.config.mapping         = {
-    {{urgency = naughty.urgency.low}, naughty.config.presets.low},
-    {{urgency = naughty.urgency.normal}, naughty.config.presets.normal},
-    {{urgency = naughty.urgency.critical}, naughty.config.presets.critical}
+    {{urgency = '\0'}, naughty.config.presets.low},
+    {{urgency = '\1'}, naughty.config.presets.normal},
+    {{urgency = '\2'}, naughty.config.presets.critical}
 }

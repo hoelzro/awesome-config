@@ -57,7 +57,7 @@ end
 require 'local-loader'
 
 require 'awful.autofocus'
-require 'naughty'
+local naughty = require 'naughty'
 
 require 'naughty-screen'
 require 'startup-programs'

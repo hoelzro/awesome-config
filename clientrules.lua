@@ -1,8 +1,10 @@
-require 'awful.rules'
+local awful     = require 'awful'
+local rules     = require 'awful.rules'
+local beautiful = require 'beautiful'
 
 local chat_tag = tags[left_screen][4]
 
-awful.rules.rules = {
+rules.rules = {
     { rule = { },
       properties = { border_width = beautiful.border_width,
                      border_color = beautiful.border_normal,

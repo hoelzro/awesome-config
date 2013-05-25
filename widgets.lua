@@ -1,10 +1,15 @@
 -- Tiny Tiny RSS
 -- Irssi
 
+local awful     = require 'awful'
+local beautiful = require 'beautiful'
+local wibox     = require 'wibox'
+
 require 'obvious.basic_mpd'
 require 'obvious.battery'
 require 'obvious.clock'
 require 'obvious.cpu'
+require 'obvious.fs_usage'
 require 'obvious.mem'
 require 'obvious.temp_info'
 
@@ -29,8 +34,8 @@ do
 end
 
 local function separator()
-  local sep = widget { type = 'textbox' }
-  sep.text  = ' | '
+  local sep = wibox.widget.textbox()
+  sep:set_text ' | '
   return sep
 end
 
@@ -59,9 +64,9 @@ mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesom
                                   }
                         })
 
-local mylauncher = awful.widget.launcher({ image = image(beautiful.awesome_icon),
+local mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
                                      menu = mymainmenu })
-local mysystray = widget({ type = "systray" })
+local mysystray = wibox.widget.systray()
 
 local mywibox = {}
 mypromptbox = {}
@@ -102,39 +107,44 @@ mytasklist.buttons = awful.util.table.join(
                                           end))
 
 for s = 1, screen.count() do
-    mypromptbox[s] = awful.widget.prompt({ layout = awful.widget.layout.horizontal.leftright })
+    mypromptbox[s] = awful.widget.prompt()
     mylayoutbox[s] = awful.widget.layoutbox(s)
     mylayoutbox[s]:buttons(awful.util.table.join(
                            awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),
                            awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end),
                            awful.button({ }, 4, function () awful.layout.inc(layouts, 1) end),
                            awful.button({ }, 5, function () awful.layout.inc(layouts, -1) end)))
-    mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.label.all, mytaglist.buttons)
+    mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, mytaglist.buttons)
 
-    mytasklist[s] = awful.widget.tasklist(function(c)
-                                              return awful.widget.tasklist.label.currenttags(c, s)
-                                          end, mytasklist.buttons)
+    mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
 
     mywibox[s] = awful.wibox({ position = "top", screen = s })
-    mywibox[s].widgets = {
-        {
-            mylauncher,
-            mytaglist[s],
-            mypromptbox[s],
-            layout = awful.widget.layout.horizontal.leftright
-        },
-        mylayoutbox[s],
-        s == preferred_screen and separator() or nil,
-        s == preferred_screen and obvious.clock() or nil,
-        s == preferred_screen and separator() or nil,
-        s == preferred_screen and mysystray or nil,
-        s == preferred_screen and separator() or nil,
-        (s == preferred_screen and has_battery()) and obvious.battery() or nil,
-        s == preferred_screen and separator() or nil,
-        s == preferred_screen and obvious.temp_info() or nil,
-        s == preferred_screen and separator() or nil,
-        s == preferred_screen and obvious.basic_mpd() or nil,
-        mytasklist[s],
-        layout = awful.widget.layout.horizontal.rightleft
-    }
+
+    local left  = wibox.layout.fixed.horizontal()
+    local right = wibox.layout.fixed.horizontal()
+    left:add(mylauncher)
+    left:add(mytaglist[s])
+    left:add(mypromptbox[s])
+    if s == preferred_screen  then
+      right:add(obvious.basic_mpd())
+      right:add(separator())
+      right:add(obvious.temp_info())
+      right:add(separator())
+      if has_battery() then
+        right:add(obvious.battery())
+        right:add(separator())
+      end
+      right:add(mysystray)
+      right:add(separator())
+      right:add(obvious.clock())
+      right:add(separator())
+      right:add(mylayoutbox[s])
+    end
+
+    local top = wibox.layout.align.horizontal()
+    top:set_left(left)
+    top:set_middle(mytasklist[s])
+    top:set_right(right)
+
+    mywibox[s]:set_widget(top)
 end

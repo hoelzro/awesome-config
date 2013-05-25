@@ -1,4 +1,4 @@
--- Google Reader
+-- Tiny Tiny RSS
 -- Irssi
 
 require 'obvious.basic_mpd'

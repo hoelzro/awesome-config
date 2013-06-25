@@ -1,6 +1,7 @@
-local audio  = require 'audio'
-local awful  = require 'awful'
-local volume = require 'volume'
+local audio   = require 'audio'
+local awful   = require 'awful'
+local naughty = require 'naughty'
+local volume  = require 'volume'
 
 local do_volume_notification
 do

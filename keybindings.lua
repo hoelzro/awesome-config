@@ -117,7 +117,35 @@ local function increase_top_right(factor)
   awful.tag.incmwfact(factor)
 end
 
-local key = awful.key
+local awful_key = awful.key
+local pcall     = pcall
+local function key(modifiers, key, on_press, on_release)
+  if on_press then
+    local f = on_press
+
+    on_press = function(...)
+      local ok, err = pcall(f, ...)
+
+      if not ok then
+        alert(err)
+      end
+    end
+  end
+
+  if on_release then
+    local f = on_release
+
+    on_release = function(...)
+      local ok, err = pcall(f, ...)
+
+      if not ok then
+        alert(err)
+      end
+    end
+  end
+
+  return awful_key(modifiers, key, on_press, on_release)
+end
 
 globalkeys = awful.util.table.join(
     key({ modkey,           }, "Left",   awful.tag.viewprev       ),

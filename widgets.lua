@@ -69,6 +69,7 @@ local mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
 local mysystray = wibox.widget.systray()
 
 local mywibox = {}
+root.wiboxes  = mywibox
 mypromptbox = {}
 local mylayoutbox = {}
 local mytaglist = {}

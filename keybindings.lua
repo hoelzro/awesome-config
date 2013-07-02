@@ -222,7 +222,7 @@ globalkeys = awful.util.table.join(
                   awful.util.getdir("cache") .. "/history_eval")
               end),
     key({ modkey }, 'f', function()
-      local wiboxes = root.wiboxes()
+      local wiboxes = root.wiboxes
 
       for _, wibox in pairs(wiboxes) do
         wibox.visible = not wibox.visible

@@ -12,6 +12,7 @@ require 'obvious.cpu'
 require 'obvious.fs_usage'
 require 'obvious.mem'
 require 'obvious.temp_info'
+require 'obvious.keymap_switch'
 
 local audio = require 'audio'
 
@@ -51,6 +52,8 @@ obvious.basic_mpd():buttons(awful.util.table.join(
   awful.button({ }, 4, function() audio.next() end),
   awful.button({ }, 5, function() audio.previous() end)
 ))
+
+obvious.keymap_switch.set_layouts { 'us', 'ru' }
 
 local myawesomemenu = {
    { "manual", terminal .. " -e man awesome" },
@@ -135,6 +138,7 @@ for s = 1, screen.count() do
         right:add(obvious.battery())
         right:add(separator())
       end
+      right:add(obvious.keymap_switch())
       right:add(mysystray)
       right:add(separator())
       right:add(obvious.clock())

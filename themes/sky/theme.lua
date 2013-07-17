@@ -44,7 +44,7 @@ theme.taglist_squares_sel   = "/usr/share/awesome/themes/default/taglist/squaref
 theme.taglist_squares_unsel = "/usr/share/awesome/themes/default/taglist/squarew.png"
 
 -- MISC
-theme.wallpaper_cmd         = { "awsetbg /usr/share/archlinux/wallpaper/archlinux-simplyblack-43.png" }
+theme.wallpaper_cmd         = { "feh --bg-fill /usr/share/archlinux/wallpaper/archlinux-simplyblack.png" }
 theme.taglist_squares       = "true"
 theme.titlebar_close_button = "true"
 theme.menu_height           = "15"

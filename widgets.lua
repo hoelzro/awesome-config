@@ -130,6 +130,8 @@ for s = 1, screen.count() do
     left:add(mytaglist[s])
     left:add(mypromptbox[s])
     if s == preferred_screen  then
+      _G.keymap_widget = obvious.keymap_switch()
+
       right:add(obvious.basic_mpd())
       right:add(separator())
       right:add(obvious.temp_info())
@@ -138,7 +140,7 @@ for s = 1, screen.count() do
         right:add(obvious.battery())
         right:add(separator())
       end
-      right:add(obvious.keymap_switch())
+      right:add(_G.keymap_widget)
       right:add(mysystray)
       right:add(separator())
       right:add(obvious.clock())

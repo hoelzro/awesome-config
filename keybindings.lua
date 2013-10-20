@@ -150,7 +150,6 @@ end
 globalkeys = awful.util.table.join(
     key({ modkey,           }, "Left",   awful.tag.viewprev       ),
     key({ modkey,           }, "Right",  awful.tag.viewnext       ),
-    key({ modkey,           }, "Escape", awful.tag.history.restore),
     key({ modkey, 'Shift'   }, "Escape", function() awful.util.spawn('slimlock') end),
     key({                   }, "XF86Sleep", function() awful.util.spawn('gksudo pm-suspend') end),
     key({                   }, "XF86Suspend", function() awful.util.spawn('gksudo pm-suspend') end),
@@ -213,6 +212,8 @@ globalkeys = awful.util.table.join(
     key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end),
 
     key({ modkey },            "r",     function () mypromptbox[mouse.screen]:run() end),
+
+    key({ modkey }, 'Escape', function() _G.keymap_widget:rotate_layout() end),
 
     key({ modkey }, "x",
               function ()

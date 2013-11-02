@@ -8,7 +8,7 @@ local volume   = {}
 
 local sinkpattern   = [[Sink\s*#(\d+)]]
 local mutepattern   = [[Mute:\s*(yes|no)]]
-local volumepattern = [[Volume:\s*0:\s*(\d+)%]]
+local volumepattern = [[Volume:\s*front-left:\s*\d+\s*/\s*(\d+)%]]
 
 volume.sinkno = 1
 

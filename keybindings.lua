@@ -13,7 +13,7 @@ do
       args.icon = volume_icon_base .. args.icon
     end
 
-    if volume_notification and volume_notification.box.screen then
+    if volume_notification and volume_notification.box.visible then
       args.replaces_id = volume_notification.id
     end
 

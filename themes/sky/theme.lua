@@ -18,7 +18,7 @@ theme.fg_focus      = "#2e3436"
 theme.fg_urgent     = "#2e3436"
 theme.fg_minimize   = "#2e3436"
 
-theme.border_width  = "2"
+theme.border_width  = 2
 theme.border_normal = "#dae3e0"
 theme.border_focus  = "#729fcf"
 theme.border_marked = "#eeeeec"
@@ -34,9 +34,10 @@ theme.layout_tilebottom      = "/usr/share/awesome/themes/sky/layouts/tilebottom
 theme.layout_tileleft        = "/usr/share/awesome/themes/sky/layouts/tileleft.png"
 theme.layout_tile            = "/usr/share/awesome/themes/sky/layouts/tile.png"
 theme.layout_tiletop         = "/usr/share/awesome/themes/sky/layouts/tiletop.png"
+theme.layout_spiral          = "/usr/share/awesome/themes/sky/layouts/spiral.png"
+theme.layout_dwindle         = "/usr/share/awesome/themes/sky/layouts/dwindle.png"
 
 theme.awesome_icon           = "/usr/share/awesome/themes/sky/awesome-icon.png"
-theme.tasklist_floating_icon = "/usr/share/awesome/themes/sky/layouts/floating.png"
 
 -- from default for now...
 theme.menu_submenu_icon     = "/usr/share/awesome/themes/default/submenu.png"
@@ -44,11 +45,11 @@ theme.taglist_squares_sel   = "/usr/share/awesome/themes/default/taglist/squaref
 theme.taglist_squares_unsel = "/usr/share/awesome/themes/default/taglist/squarew.png"
 
 -- MISC
-theme.wallpaper_cmd         = { "feh --bg-fill /usr/share/archlinux/wallpaper/archlinux-simplyblack.png" }
+theme.wallpaper             = "/usr/share/awesome/themes/sky/sky-background.png"
 theme.taglist_squares       = "true"
 theme.titlebar_close_button = "true"
-theme.menu_height           = "15"
-theme.menu_width            = "100"
+theme.menu_height           = 15
+theme.menu_width            = 100
 
 -- Define the image to load
 theme.titlebar_close_button_normal = "/usr/share/awesome/themes/default/titlebar/close_normal.png"
@@ -75,4 +76,4 @@ theme.titlebar_maximized_button_normal_active = "/usr/share/awesome/themes/defau
 theme.titlebar_maximized_button_focus_active = "/usr/share/awesome/themes/default/titlebar/maximized_focus_active.png"
 
 return theme
--- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:encoding=utf-8:textwidth=80
+-- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:textwidth=80

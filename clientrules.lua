@@ -19,16 +19,16 @@ rules.rules = {
     { rule = { class = "Claws-mail" },
       properties = { tag = tags[preferred_screen][3] } },
 
-    { rule       = { class = 'Gajim.py' },
+    { rule       = { class = 'Gajim' },
       properties = { tag = chat_tag },
       callback   = awful.client.setslave },
 
-    { rule       = { class = 'Gajim.py', role = 'roster' },
+    { rule       = { class = 'Gajim', role = 'roster' },
       properties = { },
       callback   = awful.client.setmaster },
 
 
-    { rule       = { class = 'XTerm' },
+    { rule_any   = { class = { 'XTerm', 'URxvt' } },
       properties = {},
       callback   = function(client)
         local tags = client:tags()
@@ -45,6 +45,15 @@ rules.rules = {
           awful.client.setslave(client)
         end
       end,
+    },
+
+    {
+        rule = {
+          class = 'QtQmlViewer',
+        },
+        properties = {
+          floating = true,
+        },
     },
 
     { rule       = {},

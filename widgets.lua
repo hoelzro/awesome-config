@@ -144,9 +144,9 @@ for s = 1, screen.count() do
       right:add(mysystray)
       right:add(separator())
       right:add(obvious.clock())
-      right:add(separator())
-      right:add(mylayoutbox[s])
     end
+    right:add(separator())
+    right:add(mylayoutbox[s])
 
     local top = wibox.layout.align.horizontal()
     top:set_left(left)

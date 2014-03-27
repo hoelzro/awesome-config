@@ -22,7 +22,7 @@ for s = 1, screen.count() do
     tags[s] = awful.tag({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, s, {
       layouts.max,
       layouts.default,
-      layouts.tilebottom,
+      layouts.max,
       layouts.default,
       layouts.max,
       layouts.default,

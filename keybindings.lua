@@ -154,7 +154,6 @@ globalkeys = awful.util.table.join(
     key({                   }, "XF86Sleep", function() awful.util.spawn('gksudo pm-suspend') end),
     key({                   }, "XF86Suspend", function() awful.util.spawn('gksudo pm-suspend') end),
     key({ modkey,           }, "q", function() awful.util.spawn('keepassx') end),
-    key({ modkey,           }, "`", function() awful.util.spawn('disper -e') end),
 
     key({                   }, "XF86AudioRaiseVolume", louder),
     key({                   }, "XF86AudioLowerVolume", quieter),
@@ -181,7 +180,6 @@ globalkeys = awful.util.table.join(
             awful.client.focus.byidx(-1)
             if client.focus then client.focus:raise() end
         end),
-    key({ modkey,           }, "w", function () mymainmenu:show({keygrabber=true}) end),
 
     key({ modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end),
     key({ modkey, "Shift"   }, "k", function () awful.client.swap.byidx( -1)    end),
@@ -215,13 +213,6 @@ globalkeys = awful.util.table.join(
 
     key({ modkey }, 'Escape', function() _G.keymap_widget:rotate_layout() end),
 
-    key({ modkey }, "x",
-              function ()
-                  awful.prompt.run({ prompt = "Run Lua code: " },
-                  mypromptbox[mouse.screen].widget,
-                  awful.util.eval, nil,
-                  awful.util.getdir("cache") .. "/history_eval")
-              end),
     key({ modkey }, 'f', function()
       local wiboxes = root.wiboxes
 
@@ -236,7 +227,6 @@ clientkeys = awful.util.table.join(
     key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ),
     key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end),
     key({ modkey,           }, "o",      awful.client.movetoscreen                        ),
-    key({ modkey, "Shift"   }, "r",      function (c) c:redraw()                       end),
     key({ modkey,           }, "n",      function (c) c.minimized = not c.minimized    end),
     key({ modkey,           }, "m",
         function (c)

@@ -183,18 +183,9 @@ globalkeys = awful.util.table.join(
 
     key({ modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end),
     key({ modkey, "Shift"   }, "k", function () awful.client.swap.byidx( -1)    end),
-    key({ modkey, "Control" }, "j", function () awful.screen.focus_relative( 1) end),
-    key({ modkey, "Control" }, "k", function () awful.screen.focus_relative(-1) end),
     key({ modkey,           }, "u", awful.client.urgent.jumpto),
-    key({ modkey,           }, "Tab",
-        function ()
-          local currentscreen = client.focus.screen
-          local newscreen     = currentscreen + 1
-          if newscreen > screen.count() then
-            newscreen = 1
-          end
-          awful.screen.focus(newscreen)
-        end),
+    key({ modkey }, 'Tab', function () awful.screen.focus_relative(1) end),
+    key({ modkey, 'Shift' }, 'Tab', awful.client.movetoscreen),
 
     key({ modkey,           }, "e", function () awful.util.spawn(terminal) end),
     key({ modkey, "Control" }, "r", awesome.restart),
@@ -226,7 +217,6 @@ clientkeys = awful.util.table.join(
     key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end),
     key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ),
     key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end),
-    key({ modkey,           }, "o",      awful.client.movetoscreen                        ),
     key({ modkey,           }, "n",      function (c) c.minimized = not c.minimized    end),
     key({ modkey,           }, "m",
         function (c)

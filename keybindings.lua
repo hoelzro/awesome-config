@@ -183,9 +183,9 @@ globalkeys = awful.util.table.join(
 
     key({ modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end),
     key({ modkey, "Shift"   }, "k", function () awful.client.swap.byidx( -1)    end),
-    key({ modkey,           }, "u", awful.client.urgent.jumpto),
     key({ modkey }, 'Tab', function () awful.screen.focus_relative(1) end),
     key({ modkey, 'Shift' }, 'Tab', awful.client.movetoscreen),
+    --key({ modkey,           }, "u", awful.client.urgent.jumpto),
 
     key({ modkey,           }, "e", function () awful.util.spawn(terminal) end),
     key({ modkey, "Control" }, "r", awesome.restart),
@@ -195,8 +195,8 @@ globalkeys = awful.util.table.join(
     key({ modkey,           }, "h",     function () increase_top_right(-0.05)     end),
     key({ modkey, "Shift"   }, "h",     function () awful.tag.incnmaster( 1)      end),
     key({ modkey, "Shift"   }, "l",     function () awful.tag.incnmaster(-1)      end),
-    key({ modkey, "Control" }, "h",     function () awful.tag.incncol( 1)         end),
-    key({ modkey, "Control" }, "l",     function () awful.tag.incncol(-1)         end),
+    --key({ modkey, "Control" }, "h",     function () awful.tag.incncol( 1)         end),
+    --key({ modkey, "Control" }, "l",     function () awful.tag.incncol(-1)         end),
     key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1) end),
     key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end),
 
@@ -215,7 +215,7 @@ globalkeys = awful.util.table.join(
 
 clientkeys = awful.util.table.join(
     key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end),
-    key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ),
+    --key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ),
     key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end),
     key({ modkey,           }, "n",      function (c) c.minimized = not c.minimized    end),
     key({ modkey,           }, "m",

@@ -210,7 +210,13 @@ globalkeys = awful.util.table.join(
       for _, wibox in pairs(wiboxes) do
         wibox.visible = not wibox.visible
       end
-    end)
+    end),
+
+    key({ modkey, 'Shift' }, "Right", audio.next),
+    key({ modkey, 'Shift' }, "Left", audio.previous),
+    key({ modkey, 'Shift' }, "Down", audio.toggle),
+    key({ modkey, 'Shift' }, "KP_Add", louder),
+    key({ modkey, 'Shift' }, "KP_Subtract", quieter)
 )
 
 clientkeys = awful.util.table.join(

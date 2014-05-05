@@ -188,8 +188,6 @@ globalkeys = awful.util.table.join(
     --key({ modkey,           }, "u", awful.client.urgent.jumpto),
 
     key({ modkey,           }, "e", function () awful.util.spawn(terminal) end),
-    key({ modkey, "Control" }, "r", awesome.restart),
-    key({ modkey, "Shift"   }, "q", awesome.quit),
 
     key({ modkey,           }, "l",     function () increase_top_right( 0.05)     end),
     key({ modkey,           }, "h",     function () increase_top_right(-0.05)     end),

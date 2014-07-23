@@ -19,6 +19,9 @@ rules.rules = {
     { rule = { class = "Claws-mail" },
       properties = { tag = tags[preferred_screen][3] } },
 
+    { rule = { class = "Claws-mail", role = 'message_search' },
+      properties = { floating = true } },
+
     { rule       = { class = 'Gajim' },
       properties = { tag = chat_tag },
       callback   = awful.client.setslave },
@@ -50,6 +53,34 @@ rules.rules = {
     {
         rule = {
           class = 'QtQmlViewer',
+        },
+        properties = {
+          floating = true,
+        },
+    },
+
+    {
+        rule = {
+          class = 'SshAskpass',
+        },
+        properties = {
+          floating = true,
+        },
+    },
+
+    {
+        rule = {
+          class = 'Gajim',
+          name = 'XML Console',
+        },
+        properties = {
+          floating = true,
+        },
+    },
+
+    {
+        rule = {
+            type = 'dialog',
         },
         properties = {
           floating = true,

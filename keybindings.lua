@@ -245,14 +245,14 @@ for i = 1, keynumber do
     globalkeys = awful.util.table.join(globalkeys,
         key({ modkey }, "#" .. i + 9,
                   function ()
-                        local screen = client.focus and client.focus.screen or mouse.screen
+                        local screen = mouse.screen
                         if tags[screen][i] then
                             awful.tag.viewonly(tags[screen][i])
                         end
                   end),
         key({ modkey, "Control" }, "#" .. i + 9,
                   function ()
-                      local screen = client.focus and client.focus.screen or mouse.screen
+                      local screen = mouse.screen
                       if tags[screen][i] then
                           awful.tag.viewtoggle(tags[screen][i])
                       end

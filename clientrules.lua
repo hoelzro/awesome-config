@@ -13,7 +13,7 @@ rules.rules = {
                      buttons = clientbuttons,
                      floating = false } },
     { rule = { class = "Chromium" },
-      properties = { tag = tags[preferred_screen][1], keys = chromiumkeys } },
+      properties = { keys = chromiumkeys } },
     { rule = { class = "Firefox" },
       properties = { tag = tags[preferred_screen][1] } },
     { rule = { class = "Claws-mail" },

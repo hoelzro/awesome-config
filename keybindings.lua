@@ -3,6 +3,9 @@ local awful   = require 'awful'
 local naughty = require 'naughty'
 local volume  = require 'volume'
 
+local r_match = require('awful.rules').match
+local iterate = require('awful.client').iterate
+
 local do_volume_notification
 do
   local volume_icon_base = '/usr/share/icons/gnome/24x24/status/'
@@ -153,7 +156,26 @@ globalkeys = awful.util.table.join(
     key({ modkey, 'Shift'   }, "Escape", function() awful.util.spawn('slimlock') end),
     key({                   }, "XF86Sleep", function() awful.util.spawn('gksudo pm-suspend') end),
     key({                   }, "XF86Suspend", function() awful.util.spawn('gksudo pm-suspend') end),
-    key({ modkey,           }, "q", function() awful.util.spawn('keepassx') end),
+    key({ modkey,           }, 'q', function()
+      local keepass_client
+
+      local function match_keepass(c)
+        return r_match(c, { class = 'Keepassx' })
+      end
+
+      for c in iterate(match_keepass, 1, nil) do
+        keepass_client = c
+        break
+      end
+
+      if keepass_client then
+        local current_tag = awful.tag.selected(mouse.screen)
+        awful.client.movetotag(current_tag, keepass_client)
+        client.focus = keepass_client
+      else
+        awful.util.spawn 'keepassx'
+      end
+    end),
 
     key({                   }, "XF86AudioRaiseVolume", louder),
     key({                   }, "XF86AudioLowerVolume", quieter),

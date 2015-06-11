@@ -1,9 +1,10 @@
-local pprint = require 'pretty'.print
+local rules = require 'awful.rules'
+local pprint = require 'pretty'.dump
 local format = string.format
 local tostring = tostring
-local oldmatch    = awful.rules.match
+local oldmatch    = rules.match
 
-awful.rules.match = function(c, rule)
+rules.match = function(c, rule)
   local matches = oldmatch(c, rule)
 
   print(format('Matching rule %s for client %s: %s', pprint(rule), tostring(c.name), matches and 'true' or 'false'))

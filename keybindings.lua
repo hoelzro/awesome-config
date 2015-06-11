@@ -154,8 +154,8 @@ globalkeys = awful.util.table.join(
     key({ modkey,           }, "Left",   awful.tag.viewprev       ),
     key({ modkey,           }, "Right",  awful.tag.viewnext       ),
     key({ modkey, 'Shift'   }, "Escape", function() awful.util.spawn 'xautolock -locknow' end),
-    key({                   }, "XF86Sleep", function() awful.util.spawn('gksudo pm-suspend') end),
-    key({                   }, "XF86Suspend", function() awful.util.spawn('gksudo pm-suspend') end),
+    key({                   }, "XF86Sleep", function() awful.util.spawn('gksudo systemctl suspend') end),
+    key({                   }, "XF86Suspend", function() awful.util.spawn('gksudo systemctl suspend') end),
     key({ modkey,           }, 'q', function()
       local keepass_client
 

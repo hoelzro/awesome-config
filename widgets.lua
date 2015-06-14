@@ -44,6 +44,7 @@ obvious.clock.set_editor(editor_cmd)
 obvious.clock.set_shortformat '%a %b %d %T'
 obvious.clock.set_longformat(function() return '%a %b %d %T' end)
 obvious.clock.set_shorttimer(1)
+obvious.clock.set_scrolling(true)
 
 obvious.basic_mpd.set_format '$artist - $title'
 

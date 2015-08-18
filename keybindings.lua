@@ -3,6 +3,8 @@ local awful   = require 'awful'
 local naughty = require 'naughty'
 local volume  = require 'volume'
 
+local insert_digraph = require 'unicode-input'
+
 local r_match = require('awful.rules').match
 local iterate = require('awful.client').iterate
 
@@ -236,7 +238,13 @@ globalkeys = awful.util.table.join(
     key({ modkey, 'Shift' }, "Left", audio.previous),
     key({ modkey, 'Shift' }, "Down", audio.toggle),
     key({ modkey, 'Shift' }, "KP_Add", louder),
-    key({ modkey, 'Shift' }, "KP_Subtract", quieter)
+    key({ modkey, 'Shift' }, "KP_Subtract", quieter),
+
+    key({ modkey }, 'u', function()
+     awful.prompt.run({ prompt = 'Insert Unicode digraph: ' },
+      mypromptbox[mouse.screen].widget,
+      insert_digraph)
+    end)
 )
 
 clientkeys = awful.util.table.join(

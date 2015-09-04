@@ -59,14 +59,14 @@ local function insert_unicode_digraph(digraph)
   end
 
   if is_urxvt(c) then -- urxvt wants the codepoint typed in with Shift and Ctrl down
-    with_keys_down('Shift_L', 'Control_L', function()
+    with_keys_down('Shift_L', 'Control_R', function()
       for i = 1, #codepoint_chars do
         press_key(codepoint_chars[i])
       end
     end)
   else -- GTK applications (which is what I'm assuming here) want Shift+Ctrl+u, then
        -- release, then the codepoint, then Space/Return
-    with_keys_down('Shift_L', 'Control_L', function()
+    with_keys_down('Shift_L', 'Control_R', function()
       press_key 'u'
     end)
 

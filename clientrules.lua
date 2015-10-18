@@ -14,6 +14,8 @@ rules.rules = {
                      floating = false } },
     { rule = { class = "Chromium" },
       properties = { keys = chromiumkeys } },
+    { rule = { class = 'keepassx' },
+      properties = { keys = keepasskeys } },
     { rule = { class = "Firefox" },
       properties = { tag = tags[preferred_screen][1] } },
     { rule = { class = "Claws-mail" },

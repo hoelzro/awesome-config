@@ -1,6 +1,7 @@
 local popen    = io.popen
 local execute  = os.execute
 local tonumber = tonumber
+local format   = string.format
 local volume   = {}
 
 local function slurpcommand(cmd)
@@ -28,13 +29,21 @@ function volume.toggle()
   return volume.ismute()
 end
 
-function volume.increment()
-  local volume = slurpcommand 'ponymix increase 5'
+function volume.increment(amount)
+  if type(amount) ~= 'number' then
+    amount = 5
+  end
+  local command = format('ponymix increase %d', amount)
+  local volume = slurpcommand(command)
   return tonumber(volume)
 end
 
-function volume.decrement()
-  local volume = slurpcommand 'ponymix decrease 5'
+function volume.decrement(amount)
+  if type(amount) ~= 'number' then
+    amount = 5
+  end
+  local command = format('ponymix decrease %d', amount)
+  local volume = slurpcommand(command)
   return tonumber(volume)
 end
 

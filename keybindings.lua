@@ -27,7 +27,7 @@ do
 end
 
 local function louder()
-    local volume = volume.increment()
+    local volume = volume.increment(volume_delta)
 
     do_volume_notification {
       title   = 'Volume Changed',
@@ -38,7 +38,7 @@ local function louder()
 end
 
 local function quieter()
-    local volume = volume.decrement()
+    local volume = volume.decrement(volume_delta)
 
     do_volume_notification {
       title   = 'Volume Changed',

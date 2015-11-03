@@ -34,6 +34,7 @@ modkey           = "Mod1"
 terminal         = "urxvtc"
 editor           = os.getenv("EDITOR") or "vim"
 editor_cmd       = terminal .. " -e " .. editor
+volume_delta     = 5
 
 do
   local function find_maxindex(dim)

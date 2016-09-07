@@ -1,19 +1,40 @@
+local awful = require 'awful'
+
 local audio = {}
 
+local latest_address
+
+dbus.connect_signal('org.freedesktop.DBus.Properties', function(metadata, name)
+  if name ~= 'org.mpris.MediaPlayer2.Player' then
+    return
+  end
+
+  latest_address = metadata.sender
+end)
+
+local function run_on_latest(cmd)
+  if not latest_address then
+    return
+  end
+
+  awful.util.spawn(string.format('dbus-send --type=method_call --dest="%s" /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.%s',
+    latest_address, cmd))
+end
+
 function audio.next()
-  os.execute 'tmux send-keys -t pmus:1 l'
+  run_on_latest 'Next'
 end
 
 function audio.previous()
-  os.execute 'tmux send-keys -t pmus:1 h'
+  run_on_latest 'Previous'
 end
 
 function audio.toggle()
-  os.execute 'mpc toggle'
+  run_on_latest 'PlayPause'
 end
 
 function audio.stop()
-  os.execute 'mpc stop'
+  run_on_latest 'Stop'
 end
 
 return audio

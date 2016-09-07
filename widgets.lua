@@ -5,12 +5,12 @@ local awful     = require 'awful'
 local beautiful = require 'beautiful'
 local wibox     = require 'wibox'
 
-require 'obvious.basic_mpd'
 require 'obvious.battery'
 require 'obvious.clock'
 require 'obvious.cpu'
 require 'obvious.fs_usage'
 require 'obvious.mem'
+local music_widget = require 'obvious.music'
 require 'obvious.temp_info'
 require 'obvious.keymap_switch'
 
@@ -46,9 +46,12 @@ obvious.clock.set_longformat(function() return '%a %b %d %T' end)
 obvious.clock.set_shorttimer(1)
 obvious.clock.set_scrolling(true)
 
-obvious.basic_mpd.set_format '$artist - $title'
+music_widget.set_format  '<b>$icon</b> $artist - $title'
+music_widget.set_backend 'mpris'
+music_widget.set_length(50)
+music_widget.set_marquee(true)
 
-obvious.basic_mpd():buttons(awful.util.table.join(
+music_widget():buttons(awful.util.table.join(
   awful.button({ }, 1, function() audio.toggle() end),
   awful.button({ }, 4, function() audio.next() end),
   awful.button({ }, 5, function() audio.previous() end)
@@ -133,7 +136,7 @@ for s = 1, screen.count() do
     if s == preferred_screen  then
       _G.keymap_widget = obvious.keymap_switch()
 
-      right:add(obvious.basic_mpd())
+      right:add(music_widget())
       right:add(separator())
       right:add(obvious.temp_info())
       right:add(separator())

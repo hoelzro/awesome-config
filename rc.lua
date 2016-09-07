@@ -29,6 +29,7 @@ end
 
 package.path  = table.concat(filter(splitpath(package.path), remove_local_path), ';')
 package.cpath = table.concat(filter(splitpath(package.cpath), remove_local_path), ';')
+package.cpath = package.cpath .. ';/home/rob/.config/awesome/?.so'
 
 modkey           = "Mod1"
 terminal         = "urxvtc"

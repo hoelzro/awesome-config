@@ -63,6 +63,7 @@ do
   right_screen     = maxindex
 end
 
+require 'dmux'
 require 'local-loader'
 
 require 'awful.autofocus'

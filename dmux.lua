@@ -12,9 +12,13 @@ function dbus.connect_signal(name, callback)
     callbacks[name] = cbs
 
     wrapper_functions[name] = function(...)
-      for i = 1, #cbs do
-        -- XXX pcall
-        cbs[i](...)
+      if #cbs == 1 then
+        return cbs[1](...)
+      else
+        for i = 1, #cbs do
+          -- XXX pcall
+          cbs[i](...)
+        end
       end
     end
 

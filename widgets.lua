@@ -13,6 +13,7 @@ require 'obvious.mem'
 local music_widget = require 'obvious.music'
 require 'obvious.temp_info'
 require 'obvious.keymap_switch'
+local weather = require 'obvious.weather'
 
 local audio = require 'audio'
 
@@ -146,6 +147,8 @@ for s = 1, screen.count() do
       end
       right:add(_G.keymap_widget)
       right:add(mysystray)
+      right:add(separator())
+      right:add(weather())
       right:add(separator())
       right:add(obvious.clock())
     end

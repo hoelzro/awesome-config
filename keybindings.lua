@@ -8,22 +8,29 @@ local insert_digraph = require 'unicode-input'
 local r_match = require('awful.rules').match
 local iterate = require('awful.client').iterate
 
-local do_volume_notification
-do
-  local volume_icon_base = '/usr/share/icons/gnome/24x24/status/'
-  local volume_notification
+local function replaced_notify()
+  local notification
 
-  do_volume_notification = function(args)
-    if args.icon then
-      args.icon = volume_icon_base .. args.icon
+  return function(args)
+    if notification and notification.box.visible then
+      args.replaces_id = notification.id
     end
-
-    if volume_notification and volume_notification.box.visible then
-      args.replaces_id = volume_notification.id
-    end
-
-    volume_notification = naughty.notify(args)
+    notification = naughty.notify(args)
   end
+end
+
+local volume_notify = replaced_notify()
+local mfact_notify  = replaced_notify()
+local mcount_notify = replaced_notify()
+
+local volume_icon_base = '/usr/share/icons/gnome/24x24/status/'
+
+local function do_volume_notification(args)
+  if args.icon then
+    args.icon = volume_icon_base .. args.icon
+  end
+
+  volume_notify(args)
 end
 
 local function louder()
@@ -120,6 +127,19 @@ local function increase_top_right(factor)
   end
 
   awful.tag.incmwfact(factor)
+  mfact_notify {
+    title = 'Window Factor',
+    screen = mouse.screen,
+    text  = tostring(awful.tag.getmwfact()),
+  }
+end
+
+local function inform_master_change()
+  mcount_notify {
+    title = 'Master Count',
+    screen = mouse.screen,
+    text  = tostring(awful.tag.getnmaster()),
+  }
 end
 
 local awful_key = awful.key
@@ -215,8 +235,8 @@ globalkeys = awful.util.table.join(
 
     key({ modkey,           }, "l",     function () increase_top_right( 0.05)     end),
     key({ modkey,           }, "h",     function () increase_top_right(-0.05)     end),
-    key({ modkey, "Shift"   }, "h",     function () awful.tag.incnmaster( 1)      end),
-    key({ modkey, "Shift"   }, "l",     function () awful.tag.incnmaster(-1)      end),
+    key({ modkey, "Shift"   }, "h",     function () awful.tag.incnmaster( 1); inform_master_change() end),
+    key({ modkey, "Shift"   }, "l",     function () awful.tag.incnmaster(-1); inform_master_change() end),
     --key({ modkey, "Control" }, "h",     function () awful.tag.incncol( 1)         end),
     --key({ modkey, "Control" }, "l",     function () awful.tag.incncol(-1)         end),
     key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1) end),

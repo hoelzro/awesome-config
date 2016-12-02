@@ -244,6 +244,10 @@ globalkeys = awful.util.table.join(
      awful.prompt.run({ prompt = 'Insert Unicode digraph: ' },
       mypromptbox[mouse.screen].widget,
       insert_digraph)
+    end),
+
+    key({ modkey, 'Shift' }, 's', function()
+      awful.util.spawn_with_shell "echo -n '¯\\_(ツ)_/¯' | xclip -i -selection clipboard"
     end)
 )
 

@@ -73,8 +73,8 @@ local mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
                                      menu = mymainmenu })
 local mysystray = wibox.widget.systray()
 
-local mywibox = {}
-root.wiboxes  = mywibox
+local mywibar = {}
+root.wibars  = mywibar
 mypromptbox = {}
 local mylayoutbox = {}
 local mytaglist = {}
@@ -124,7 +124,7 @@ for s = 1, screen.count() do
 
     mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
 
-    mywibox[s] = awful.wibox({ position = "top", screen = s })
+    mywibar[s] = awful.wibar({ position = "top", screen = s })
 
     local left  = wibox.layout.fixed.horizontal()
     local right = wibox.layout.fixed.horizontal()
@@ -157,5 +157,5 @@ for s = 1, screen.count() do
     top:set_middle(mytasklist[s])
     top:set_right(right)
 
-    mywibox[s]:set_widget(top)
+    mywibar[s]:set_widget(top)
 end

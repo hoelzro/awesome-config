@@ -242,14 +242,14 @@ globalkeys = awful.util.table.join(
     key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1) end),
     key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end),
 
-    key({ modkey },            "r",     function () mypromptbox[mouse.screen]:run() end),
+    key({ modkey },            "r",     function () mypromptbox[mouse.screen.index]:run() end),
 
     key({ modkey }, 'Escape', function() _G.keymap_widget:rotate_layout() end),
 
     key({ modkey }, 'f', function()
-      local wiboxes = root.wiboxes
+      local wibars = root.wibars
 
-      for _, wibox in pairs(wiboxes) do
+      for _, wibox in pairs(wibars) do
         wibox.visible = not wibox.visible
       end
     end),
@@ -262,7 +262,7 @@ globalkeys = awful.util.table.join(
 
     key({ modkey }, 'u', function()
      awful.prompt.run({ prompt = 'Insert Unicode digraph: ' },
-      mypromptbox[mouse.screen].widget,
+      mypromptbox[mouse.screen.index].widget,
       insert_digraph)
     end),
 
@@ -304,28 +304,28 @@ for i = 1, keynumber do
     globalkeys = awful.util.table.join(globalkeys,
         key({ modkey }, "#" .. i + 9,
                   function ()
-                        local screen = mouse.screen
+                        local screen = mouse.screen.index
                         if tags[screen][i] then
                             awful.tag.viewonly(tags[screen][i])
                         end
                   end),
         key({ modkey, "Control" }, "#" .. i + 9,
                   function ()
-                      local screen = mouse.screen
+                      local screen = mouse.screen.index
                       if tags[screen][i] then
                           awful.tag.viewtoggle(tags[screen][i])
                       end
                   end),
         key({ modkey, "Shift" }, "#" .. i + 9,
                   function ()
-                      if client.focus and tags[client.focus.screen][i] then
-                          awful.client.movetotag(tags[client.focus.screen][i])
+                      if client.focus and tags[client.focus.screen.index][i] then
+                          awful.client.movetotag(tags[client.focus.screen.index][i])
                       end
                   end),
         key({ modkey, "Control", "Shift" }, "#" .. i + 9,
                   function ()
-                      if client.focus and tags[client.focus.screen][i] then
-                          awful.client.toggletag(tags[client.focus.screen][i])
+                      if client.focus and tags[client.focus.screen.index][i] then
+                          awful.client.toggletag(tags[client.focus.screen.index][i])
                       end
                   end))
 end

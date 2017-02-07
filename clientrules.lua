@@ -99,7 +99,7 @@ rules.rules = {
     },
 }
 
-client.connect_signal("manage", function (c, startup)
+client.connect_signal("manage", function (c)
     c:connect_signal("mouse::enter", function(c)
         if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
             and awful.client.focus.filter(c) then
@@ -107,11 +107,14 @@ client.connect_signal("manage", function (c, startup)
         end
     end)
 
-    if not startup then
+    if not awesome.startup then
         if not c.size_hints.user_position and not c.size_hints.program_position then
             awful.placement.no_overlap(c)
             awful.placement.no_offscreen(c)
         end
+        c:move_to_screen(mouse.screen.index)
+        c:move_to_tag(mouse.screen.selected_tag)
+        client.focus = c
     end
 end)
 

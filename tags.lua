@@ -32,4 +32,4 @@ for s = 1, screen.count() do
     })
 end
 
-awful.tag.setmwfact(0.20, tags[left_screen][4])
+tags[left_screen][4].master_width_factor = 0.20

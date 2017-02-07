@@ -44,7 +44,7 @@ obvious.clock.set_longformat(function() return '%a %b %d %T' end)
 obvious.clock.set_shorttimer(1)
 obvious.clock.set_scrolling(true)
 
-music_widget.set_format  '$icon $artist - $title'
+music_widget.set_format  '<b>$icon</b> <marquee>$artist - $title</marquee>'
 music_widget.set_backend 'mpris'
 music_widget.set_length(50)
 music_widget.set_marquee(true)

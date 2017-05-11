@@ -27,9 +27,9 @@ local function remove_local_path(path)
   return not string.match(path, '^%./')
 end
 
-package.path  = table.concat(filter(splitpath(package.path), remove_local_path), ';') .. ';/home/rob/.config/awesome/lua-modules/share/lua/5.1/?.lua'
+package.path  = table.concat(filter(splitpath(package.path), remove_local_path), ';') .. ';/home/rob/.config/awesome/lua53-modules/share/lua/5.3/?.lua'
 package.cpath = table.concat(filter(splitpath(package.cpath), remove_local_path), ';')
-package.cpath = package.cpath .. ';/home/rob/.config/awesome/?.so;/home/rob/.config/awesome/lua-modules/lib/lua/5.1/?.so'
+package.cpath = package.cpath .. ';/home/rob/.config/awesome/?.so;/home/rob/.config/awesome/lua53-modules/lib/lua/5.3/?.so'
 
 modkey           = "Mod1"
 terminal         = "urxvtc"

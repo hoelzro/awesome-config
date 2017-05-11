@@ -1,13 +1,13 @@
-local loaders    = package.loaders
-local fileloader = loaders[2]
+local searchers  = package.searchers
+local filesearcher = searchers[2]
 
-local function localloader(filename)
-  local regularfile = fileloader(filename)
+local function localsearcher(filename)
+  local regularfile = filesearcher(filename)
   if type(regularfile) == 'string' then
     return ''
   end
 
-  local localfile = fileloader('local.' .. filename)
+  local localfile = filesearcher('local.' .. filename)
 
   if type(localfile) == 'string' then
     return regularfile
@@ -20,4 +20,4 @@ local function localloader(filename)
   end
 end
 
-table.insert(loaders, 2, localloader)
+table.insert(searchers, 2, localsearcher)

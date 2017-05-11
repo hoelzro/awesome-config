@@ -90,7 +90,9 @@ rules.rules = {
     },
 
     { rule       = {},
-      properties = {},
+      properties = {
+        size_hints_honor = false,
+      },
       callback   = function(client)
         if client.transient_for then
           awful.client.floating.set(client, true)

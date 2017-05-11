@@ -114,8 +114,10 @@ client.connect_signal("manage", function (c)
             awful.placement.no_overlap(c)
             awful.placement.no_offscreen(c)
         end
-        c:move_to_screen(mouse.screen.index)
-        c:move_to_tag(mouse.screen.selected_tag)
+        if c.first_tag == screen[left_screen].selected_tag then
+          c:move_to_screen(mouse.screen.index)
+          c:move_to_tag(mouse.screen.selected_tag)
+        end
         client.focus = c
     end
 end)

@@ -194,6 +194,7 @@ globalkeys = awful.util.table.join(
         local current_tag = awful.tag.selected(mouse.screen)
         awful.client.movetotag(current_tag, keepass_client)
         client.focus = keepass_client
+        keepass_client:raise()
       else
         awful.util.spawn 'keepassx'
       end

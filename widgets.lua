@@ -8,7 +8,7 @@ local wibox     = require 'wibox'
 require 'obvious.battery'
 require 'obvious.clock'
 local music_widget = require 'obvious.music'
-require 'obvious.temp_info'
+local temp_info = require 'obvious.temp_info'
 require 'obvious.keymap_switch'
 local weather = require 'obvious.weather'
 
@@ -136,7 +136,7 @@ for s = 1, screen.count() do
 
       right:add(music_widget())
       right:add(separator())
-      right:add(obvious.temp_info())
+      right:add(temp_info())
       right:add(separator())
       if has_battery() then
         right:add(obvious.battery())

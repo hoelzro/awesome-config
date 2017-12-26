@@ -182,7 +182,7 @@ globalkeys = awful.util.table.join(
       local keepass_client
 
       local function match_keepass(c)
-        return r_match(c, { class = 'Keepassx' })
+        return r_match(c, { class = 'keepassxc' })
       end
 
       for c in iterate(match_keepass, 1, nil) do
@@ -196,7 +196,7 @@ globalkeys = awful.util.table.join(
         client.focus = keepass_client
         keepass_client:raise()
       else
-        awful.util.spawn 'keepassx'
+        awful.util.spawn 'keepassxc'
       end
     end),
 

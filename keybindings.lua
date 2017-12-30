@@ -5,6 +5,8 @@ local volume  = require 'volume'
 
 local insert_digraph = require 'unicode-input'
 
+local remorseful = require 'remorseful'
+
 local r_match = require('awful.rules').match
 local iterate = require('awful.client').iterate
 
@@ -230,7 +232,7 @@ globalkeys = awful.util.table.join(
     key({ modkey, "Shift"   }, "k", function () awful.client.swap.byidx( -1)    end),
     key({ modkey }, 'Tab', function () awful.screen.focus_relative(1) end),
     key({ modkey, 'Shift' }, 'Tab', awful.client.movetoscreen),
-    --key({ modkey,           }, "u", awful.client.urgent.jumpto),
+    key({ modkey, 'Shift' }, 'u', remorseful.cancel),
 
     key({ modkey,           }, "e", function () awful.util.spawn(terminal) end),
 
@@ -267,7 +269,29 @@ globalkeys = awful.util.table.join(
 )
 
 clientkeys = awful.util.table.join(
-    key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end),
+    key({ modkey, "Shift"   }, "c",      function (c)
+      local is_urxvt = string.lower(c.class) == 'urxvt'
+
+      -- XXX use awful.rules instead
+      if is_urxvt then
+        remorseful {
+          start = function()
+            remorseful.text = string.format('Closing %s (press Alt-Shift-u to cancel)', c.class)
+            c.hidden = true
+          end,
+
+          commit = function()
+            c:kill()
+          end,
+
+          cancel = function()
+            c.hidden = false
+          end,
+        }
+      else
+        c:kill()
+      end
+    end),
     --key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ),
     key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end),
     key({ modkey,           }, "n",      function (c) c.minimized = not c.minimized    end),

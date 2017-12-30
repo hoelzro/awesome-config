@@ -14,6 +14,8 @@ local weather = require 'obvious.weather'
 
 local audio = require 'audio'
 
+local remorseful = require 'remorseful'
+
 local has_battery
 
 do
@@ -131,6 +133,11 @@ for s = 1, screen.count() do
     left:add(mylauncher)
     left:add(mytaglist[s])
     left:add(mypromptbox[s])
+
+    if s == preferred_screen then
+      left:add(remorseful.widget)
+    end
+
     if s == preferred_screen  then
       _G.keymap_widget = obvious.keymap_switch()
 

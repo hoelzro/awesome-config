@@ -5,7 +5,7 @@ local awful     = require 'awful'
 local beautiful = require 'beautiful'
 local wibox     = require 'wibox'
 
-require 'obvious.battery'
+local battery = require 'obvious.battery'
 require 'obvious.clock'
 local music_widget = require 'obvious.music'
 local temp_info = require 'obvious.temp_info'
@@ -146,7 +146,7 @@ for s = 1, screen.count() do
       right:add(temp_info())
       right:add(separator())
       if has_battery() then
-        right:add(obvious.battery())
+        right:add(battery())
         right:add(separator())
       end
       right:add(_G.keymap_widget)

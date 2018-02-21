@@ -20,7 +20,8 @@ function volume.get()
 end
 
 function volume.ismute()
-  return execute('ponymix is-muted') == 0
+  local success = execute('ponymix is-muted')
+  return success
 end
 
 function volume.toggle()

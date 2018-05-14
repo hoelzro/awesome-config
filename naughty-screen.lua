@@ -1,4 +1,5 @@
-local merge_tables = require 'awful.util'.table.join
+local util = require 'awful.util'
+local merge_tables = util.table.join
 local naughty = require 'naughty'
 local naughty_dbus = require 'naughty.dbus'
 local naughty_defaults = {

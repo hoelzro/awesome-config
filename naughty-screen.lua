@@ -26,33 +26,42 @@ local surface = require 'gears.surface'
 local cairo = require('lgi').cairo
 
 function naughty.config.notify_callback(args)
-  if type(args.icon) == 'string' then
-    local icon = args.icon
-    if string.sub(icon, 1, 7) == 'file://' then
-      icon = string.sub(icon, 8)
-      icon = string.gsub(icon, "%%(%x%x)", function(x) return string.char(tonumber(x, 16)) end)
+  local ok, err = pcall(function()
+    if type(args.icon) == 'string' then
+      local icon = args.icon
+      if string.sub(icon, 1, 7) == 'file://' then
+        icon = string.sub(icon, 8)
+        icon = string.gsub(icon, "%%(%x%x)", function(x) return string.char(tonumber(x, 16)) end)
+      end
+      if not gfs.file_readable(icon) then
+        icon = util.geticonpath(icon, naughty.config.icon_formats, naughty.config.icon_dirs, icon_size) or icon
+      end
+      icon = surface.load_uncached(icon)
+      args.icon = icon
     end
-    if not gfs.file_readable(icon) then
-      icon = util.geticonpath(icon, naughty.config.icon_formats, naughty.config.icon_dirs, icon_size) or icon
+
+    if args.icon then
+      local icon = args.icon
+
+      local icon_size = 128
+
+      if icon:get_width() > icon_size or icon:get_height() > icon_size then
+        local scaled = cairo.ImageSurface(cairo.Format.ARGB32, icon_size, icon_size)
+        local cr = cairo.Context(scaled)
+        cr:scale(icon_size / icon:get_height(), icon_size / icon:get_width())
+        cr:set_source_surface(icon, 0, 0)
+        cr:paint()
+        args.icon = scaled
+      end
     end
-    icon = surface.load_uncached(icon)
-    args.icon = icon
+
+    return args
+  end)
+
+  if ok then
+    return err
   end
 
-  if args.icon then
-    local icon = args.icon
-
-    local icon_size = 128
-
-    if icon:get_width() > icon_size or icon:get_height() > icon_size then
-      local scaled = cairo.ImageSurface(cairo.Format.ARGB32, icon_size, icon_size)
-      local cr = cairo.Context(scaled)
-      cr:scale(icon_size / icon:get_height(), icon_size / icon:get_width())
-      cr:set_source_surface(icon, 0, 0)
-      cr:paint()
-      args.icon = scaled
-    end
-  end
-
+  print(err)
   return args
 end

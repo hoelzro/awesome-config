@@ -6,7 +6,7 @@ local beautiful = require 'beautiful'
 local wibox     = require 'wibox'
 
 local battery = require 'obvious.battery'
-require 'obvious.clock'
+local clock = require 'obvious.clock'
 local music_widget = require 'obvious.music'
 local temp_info = require 'obvious.temp_info'
 require 'obvious.keymap_switch'
@@ -40,11 +40,11 @@ local function separator()
   return sep
 end
 
-obvious.clock.set_editor(editor_cmd)
-obvious.clock.set_shortformat '%a %b %d %T'
-obvious.clock.set_longformat(function() return '%a %b %d %T' end)
-obvious.clock.set_shorttimer(1)
-obvious.clock.set_scrolling(true)
+clock.set_editor(editor_cmd)
+clock.set_shortformat '%a %b %d %T'
+clock.set_longformat(function() return '%a %b %d %T' end)
+clock.set_shorttimer(1)
+clock.set_scrolling(true)
 
 music_widget.set_format  '<b>$icon</b> <marquee>$artist - $title</marquee>'
 music_widget.set_backend 'mpris'
@@ -154,7 +154,7 @@ for s = 1, screen.count() do
       right:add(separator())
       right:add(weather())
       right:add(separator())
-      right:add(obvious.clock())
+      right:add(clock())
     end
     right:add(separator())
     right:add(mylayoutbox[s])

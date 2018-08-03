@@ -144,6 +144,28 @@ local function inform_master_change()
   }
 end
 
+local function myswap(dir)
+  local focused = client.focus
+  if not focused then
+    return
+  end
+
+  local clients = awful.client.visible(focused.screen)
+
+  for pos = 1, #clients do
+    if clients[pos] == focused then
+
+      if pos == 1 and dir == -1 then
+        return awful.client.cycle(false, focused.screen)
+      elseif pos == #clients and dir == 1 then
+        return awful.client.cycle(true, focused.screen)
+      else
+        return awful.client.swap.byidx(dir)
+      end
+    end
+  end
+end
+
 local awful_key = awful.key
 local pcall     = pcall
 local function key(modifiers, key, on_press, on_release)
@@ -228,8 +250,8 @@ globalkeys = awful.util.table.join(
             if client.focus then client.focus:raise() end
         end),
 
-    key({ modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end),
-    key({ modkey, "Shift"   }, "k", function () awful.client.swap.byidx( -1)    end),
+    key({ modkey, "Shift"   }, "j", function () myswap( 1)    end),
+    key({ modkey, "Shift"   }, "k", function () myswap(-1)    end),
     key({ modkey }, 'Tab', function () awful.screen.focus_relative(1) end),
     key({ modkey, 'Shift' }, 'Tab', awful.client.movetoscreen),
     key({ modkey, 'Shift' }, 'u', remorseful.cancel),

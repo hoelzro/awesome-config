@@ -32,6 +32,8 @@ rules.rules = {
       properties = { },
       callback   = awful.client.setmaster },
 
+    { rule       = { class = 'Steam' },
+      properties = { floating = true } },
 
     { rule_any   = { class = { 'XTerm', 'URxvt' } },
       properties = {},

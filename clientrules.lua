@@ -35,6 +35,9 @@ rules.rules = {
     { rule       = { class = 'Steam' },
       properties = { floating = true } },
 
+    { rule       = { type = 'splash' },
+      properties = { floating = true } },
+
     { rule_any   = { class = { 'XTerm', 'URxvt' } },
       properties = {},
       callback   = function(client)

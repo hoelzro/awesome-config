@@ -101,6 +101,8 @@ rules.rules = {
       callback   = function(client)
         if client.transient_for then
           awful.client.floating.set(client, true)
+          client:move_to_screen(client.transient_for.screen)
+          client:move_to_tag(client.transient_for.first_tag)
         end
       end,
     },

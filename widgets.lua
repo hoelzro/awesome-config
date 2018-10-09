@@ -81,7 +81,7 @@ mypromptbox = {}
 local mylayoutbox = {}
 local mytaglist = {}
 mytaglist.buttons = awful.util.table.join(
-                    awful.button({ }, 1, awful.tag.viewonly),
+                    awful.button({ }, 1, function(t) t:view_only() end),
                     awful.button({ modkey }, 1, awful.client.movetotag),
                     awful.button({ }, 3, awful.tag.viewtoggle),
                     awful.button({ modkey }, 3, awful.client.toggletag),
@@ -92,7 +92,7 @@ local mytasklist = {}
 mytasklist.buttons = awful.util.table.join(
                      awful.button({ }, 1, function (c)
                                               if not c:isvisible() then
-                                                  awful.tag.viewonly(c:tags()[1])
+                                                c:tags()[1]:view_only()
                                               end
                                               client.focus = c
                                               c:raise()

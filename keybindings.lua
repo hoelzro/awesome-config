@@ -348,10 +348,10 @@ for i = 1, keynumber do
     globalkeys = awful.util.table.join(globalkeys,
         key({ modkey }, "#" .. i + 9,
                   function ()
-                        local screen = mouse.screen.index
-                        if tags[screen][i] then
-                            awful.tag.viewonly(tags[screen][i])
-                        end
+                    local screen = mouse.screen.index
+                    if tags[screen][i] then
+                      tags[screen][i]:view_only()
+                    end
                   end),
         key({ modkey, "Control" }, "#" .. i + 9,
                   function ()

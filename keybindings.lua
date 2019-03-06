@@ -220,7 +220,7 @@ globalkeys = awful.util.table.join(
         client.focus = keepass_client
         keepass_client:raise()
       else
-        awful.util.spawn 'keepassxc'
+        awful.util.spawn 'firejail keepassxc'
       end
     end),
 

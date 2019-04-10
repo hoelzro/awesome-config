@@ -292,7 +292,7 @@ globalkeys = awful.util.table.join(
 
 clientkeys = awful.util.table.join(
     key({ modkey, "Shift"   }, "c",      function (c)
-      local is_urxvt = string.lower(c.class) == 'urxvt'
+      local is_urxvt = string.lower(c.class or '') == 'urxvt'
 
       -- XXX use awful.rules instead
       if is_urxvt then

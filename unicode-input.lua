@@ -9,7 +9,7 @@ local timer      = timer
 local digraphs = require 'digraphs'
 
 local function is_urxvt(c)
-  return string_lower(c.class) == 'urxvt'
+  return string_lower(c.class or '') == 'urxvt'
 end
 
 local function with_keys_down(...)

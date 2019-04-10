@@ -68,22 +68,11 @@ local function insert_unicode_digraph(digraph)
        -- release, then the codepoint, then Space/Return
     with_keys_down('Shift_L', 'Control_R', function()
       press_key 'u'
+
+      for i = 1, #codepoint_chars do
+        press_key(codepoint_chars[i])
+      end
     end)
-
-    for i = 1, #codepoint_chars do
-      press_key(codepoint_chars[i])
-    end
-
-    -- GTK applications need us to lag by a bit (100ms seems to work)
-    -- for the Return to flush the Unicode character
-    local t = timer { timeout = 0.1 }
-    t:connect_signal('timeout', function()
-      t:stop()
-      t = nil
-      press_key 'Return'
-    end)
-
-    t:start()
   end
 end
 

@@ -12,6 +12,10 @@ local function is_urxvt(c)
   return string_lower(c.class or '') == 'urxvt'
 end
 
+local function is_firefox(c)
+  return string_lower(c.class or '') == 'firefox'
+end
+
 local function with_keys_down(...)
   local keys           = { ... }
   local action         = keys[#keys]
@@ -64,8 +68,29 @@ local function insert_unicode_digraph(digraph)
         press_key(codepoint_chars[i])
       end
     end)
+  elseif is_firefox(c) then
+    -- Firefox just has to be different - it likes Shift+Ctrl+u, then release,
+    -- then the codepoint, then Space/Return
+    with_keys_down('Shift_L', 'Control_R', function()
+      press_key 'u'
+    end)
+
+    for i = 1, #codepoint_chars do
+      press_key(codepoint_chars[i])
+    end
+
+    -- Firefox needs us to lag by a bit (100ms seems to work)
+    -- for the Return to flush the Unicode character
+    local t = timer { timeout = 0.1 }
+    t:connect_signal('timeout', function()
+      t:stop()
+      t = nil
+      press_key 'Return'
+    end)
+
+    t:start()
   else -- GTK applications (which is what I'm assuming here) want Shift+Ctrl+u, then
-       -- release, then the codepoint, then Space/Return
+       -- then the codepoint, then release
     with_keys_down('Shift_L', 'Control_R', function()
       press_key 'u'
 

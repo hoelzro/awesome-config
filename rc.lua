@@ -32,7 +32,7 @@ package.cpath = table.concat(filter(splitpath(package.cpath), remove_local_path)
 package.cpath = package.cpath .. ';/home/rob/.config/awesome/?.so;/home/rob/.config/awesome/lua53-modules/lib/lua/5.3/?.so'
 
 modkey           = "Mod1"
-terminal         = "urxvtc"
+terminal         = "urxvt"
 editor           = os.getenv("EDITOR") or "vim"
 editor_cmd       = terminal .. " -e " .. editor
 volume_delta     = 5

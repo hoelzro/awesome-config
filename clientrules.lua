@@ -14,6 +14,8 @@ rules.rules = {
                      floating = false } },
     { rule = { class = "Chromium" },
       properties = { keys = chromiumkeys } },
+    { rule = { class = "Slack" },
+      properties = { buttons = slackbuttons, keys = slackkeys } },
     { rule = { instance = 'keepassx' },
       properties = { keys = keepasskeys } },
     { rule = { class = "Firefox" },

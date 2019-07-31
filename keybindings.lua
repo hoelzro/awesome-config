@@ -334,6 +334,11 @@ chromiumkeys = awful.util.table.join(
   key({ 'Shift',           }, 'space', noop)
 )
 
+slackkeys = awful.util.table.join(
+  clientkeys,
+  key({ 'Control' }, 'w', noop)
+)
+
 keepasskeys = awful.util.table.join(
   clientkeys,
   key({ 'Control' }, 'v', noop)

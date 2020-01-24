@@ -1,7 +1,8 @@
-local audio   = require 'audio'
-local awful   = require 'awful'
-local naughty = require 'naughty'
-local volume  = require 'volume'
+local audio       = require 'audio'
+local awful       = require 'awful'
+local gears_timer = require 'gears.timer'
+local naughty     = require 'naughty'
+local volume      = require 'volume'
 
 local insert_digraph = require 'unicode-input'
 
@@ -282,7 +283,9 @@ globalkeys = awful.util.table.join(
     key({ modkey }, 'u', function()
      awful.prompt.run({ prompt = 'Insert Unicode digraph: ' },
       mypromptbox[mouse.screen.index].widget,
-      insert_digraph)
+      function(digraph)
+        gears_timer.delayed_call(insert_digraph, digraph)
+      end)
     end),
 
     key({ modkey, 'Shift' }, 's', function()

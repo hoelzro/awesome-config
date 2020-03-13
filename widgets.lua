@@ -138,6 +138,7 @@ for s = 1, screen.count() do
     end
 
     local month_calendar = calendar.month {
+      screen       = screen[s],
       spacing      = 0,
       margin       = 0,
       start_sunday = true,

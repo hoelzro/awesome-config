@@ -31,5 +31,3 @@ for s = 1, screen.count() do
       layouts.default,
     })
 end
-
-tags[left_screen][4].master_width_factor = 0.20

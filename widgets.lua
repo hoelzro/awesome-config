@@ -4,9 +4,10 @@
 local awful     = require 'awful'
 local beautiful = require 'beautiful'
 local wibox     = require 'wibox'
+local textclock = require 'wibox.widget.textclock'
+local calendar  = require 'awful.widget.calendar_popup'
 
 local battery = require 'obvious.battery'
-local clock = require 'obvious.clock'
 local music_widget = require 'obvious.music'
 local temp_info = require 'obvious.temp_info'
 require 'obvious.keymap_switch'
@@ -40,11 +41,10 @@ local function separator()
   return sep
 end
 
-clock.set_editor(editor_cmd)
-clock.set_shortformat '%a %b %d %T'
-clock.set_longformat(function() return '%a %b %d %T' end)
-clock.set_shorttimer(1)
-clock.set_scrolling(true)
+local function attached(attacher, attached)
+  attacher:attach(attached)
+  return attached
+end
 
 music_widget.set_format  '<b>$icon</b> <marquee>$artist - $title</marquee>'
 music_widget.set_backend 'mpris'
@@ -138,6 +138,30 @@ for s = 1, screen.count() do
       left:add(remorseful.widget)
     end
 
+    local month_calendar = calendar.month {
+      spacing      = 0,
+      margin       = 0,
+      start_sunday = true,
+      style_month = {
+        border_width = 0,
+      },
+      style_header = {
+        border_width = 0,
+      },
+      style_weekday = {
+        border_width = 0,
+      },
+      style_weeknumber = {
+        border_width = 0,
+      },
+      style_normal = {
+        border_width = 0,
+      },
+      style_focus = {
+        border_width = 0,
+      },
+    }
+
     if s == preferred_screen  then
       _G.keymap_widget = obvious.keymap_switch()
 
@@ -154,7 +178,10 @@ for s = 1, screen.count() do
       right:add(separator())
       right:add(weather())
       right:add(separator())
-      right:add(clock())
+      right:add(attached(month_calendar, textclock('%a %b %d', 60)))
+      right:add(attached(month_calendar, textclock(' <b>UTC</b>: %H:%M', 60, 'Z')))
+      right:add(attached(month_calendar, textclock(' <b>PST</b>: %H:%M', 60, 'America/Los_Angeles')))
+      right:add(attached(month_calendar, textclock(' <b>CST</b>: %H:%M:%S', 1, 'America/Chicago')))
     end
     right:add(separator())
     right:add(mylayoutbox[s])

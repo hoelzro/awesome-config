@@ -18,8 +18,6 @@ rules.rules = {
       properties = { buttons = slackbuttons, keys = slackkeys } },
     { rule = { instance = 'keepassx' },
       properties = { keys = keepasskeys } },
-    { rule_any = { class = {'Firefox', 'firefox'} },
-      properties = { tag = tags[preferred_screen][1] } },
     { rule = { class = "Claws-mail" },
       properties = { tag = tags[preferred_screen][3] } },
 

@@ -14,8 +14,8 @@ require 'obvious.keymap_switch'
 local weather = require 'obvious.weather'
 
 local audio = require 'audio'
-
 local remorseful = require 'remorseful'
+local safe_restart = require 'safe-restart'
 
 local has_battery
 
@@ -62,7 +62,7 @@ obvious.keymap_switch.set_layouts { 'us', 'ru' }
 local myawesomemenu = {
    { "manual", terminal .. " -e man awesome" },
    { "edit config", editor_cmd .. " " .. awful.util.getdir("config") .. "/rc.lua" },
-   { "restart", awesome.restart },
+   { "restart", safe_restart },
 }
 
 mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesome_icon },

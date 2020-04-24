@@ -284,7 +284,12 @@ globalkeys = awful.util.table.join(
      awful.prompt.run({ prompt = 'Insert Unicode digraph: ' },
       mypromptbox[mouse.screen.index].widget,
       function(digraph)
-        gears_timer.delayed_call(insert_digraph, digraph)
+        gears_timer {
+          timeout     = 0.1,
+          autostart   = true,
+          single_shot = true,
+          callback    = function() insert_digraph(digraph) end,
+        }
       end)
     end),
 

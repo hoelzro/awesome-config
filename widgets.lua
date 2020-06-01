@@ -178,9 +178,9 @@ for s = 1, screen.count() do
       right:add(separator())
       right:add(weather())
       right:add(separator())
-      right:add(attached(month_calendar, textclock('%a %b %d', 60)))
-      right:add(attached(month_calendar, textclock(' <b>UTC</b>: %H:%M', 60, 'Z')))
-      right:add(attached(month_calendar, textclock(' <b>PST</b>: %H:%M', 60, 'America/Los_Angeles')))
+      right:add(textclock('%a %b %d', 60))
+      right:add(textclock(' <b>UTC</b>: %H:%M', 60, 'Z'))
+      right:add(textclock(' <b>PST</b>: %H:%M', 60, 'America/Los_Angeles'))
       right:add(attached(month_calendar, textclock(' <b>CST</b>: %H:%M:%S', 1, 'America/Chicago')))
     end
     right:add(separator())

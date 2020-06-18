@@ -30,4 +30,44 @@ awful.screen.connect_for_each_screen(function(s)
       layouts.default,
       layouts.default,
     })
+
+    s:connect_signal('removed', function()
+      tags[s] = nil
+    end)
+end)
+
+client.connect_signal('request::tag', function(c, tag, opts)
+  if tag ~= nil or (opts or {}).reason ~= 'screen-removed' then
+    return
+  end
+
+  local current_screen = c.first_tag.screen
+  local new_screen
+
+  for other_screen in screen do
+    if other_screen ~= current_screen then
+      new_screen = other_screen
+      break
+    end
+  end
+
+  local current_tag = c.first_tag
+  local new_tag
+
+  if new_screen then
+    for i = 1, #tags[new_screen] do
+      local other_tag = tags[new_screen][i]
+      if other_tag.index == current_tag.index then
+        new_tag = other_tag
+        break
+      end
+    end
+  end
+
+  if new_tag then
+    c:move_to_tag(new_tag)
+  else
+    -- XXX fallback?
+    alert(string.format('unable to move client %s to new screen', tostring(c)))
+  end
 end)

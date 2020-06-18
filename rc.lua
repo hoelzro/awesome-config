@@ -37,33 +37,6 @@ editor           = os.getenv("EDITOR") or "vim"
 editor_cmd       = terminal .. " -e " .. editor
 volume_delta     = 5
 
-do
-  local function find_maxindex(dim)
-    for i = 1, screen.count() do
-      local s = screen[i]
-      if not maxindex or s.geometry[dim] > screen[maxindex].geometry[dim] then
-        maxindex = i
-      end
-      if not minindex or s.geometry[dim] < screen[minindex].geometry[dim] then
-        minindex = i
-      end
-    end
-
-    return maxindex, minindex
-  end
-
-  local maxindex, minindex = find_maxindex 'x'
-
-  if maxindex == minindex then
-    minindex, maxindex = find_maxindex 'y'
-  end
-
-
-  preferred_screen = maxindex
-  left_screen      = minindex
-  right_screen     = maxindex
-end
-
 require 'dmux'
 require 'local-loader'
 

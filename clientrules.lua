@@ -2,8 +2,6 @@ local awful     = require 'awful'
 local rules     = require 'awful.rules'
 local beautiful = require 'beautiful'
 
-local chat_tag = tags[left_screen][4]
-
 rules.rules = {
     { rule = { },
       properties = { border_width = beautiful.border_width,
@@ -18,15 +16,9 @@ rules.rules = {
       properties = { buttons = slackbuttons, keys = slackkeys } },
     { rule = { instance = 'keepassx' },
       properties = { keys = keepasskeys } },
-    { rule = { class = "Claws-mail" },
-      properties = { tag = tags[preferred_screen][3] } },
 
     { rule = { class = "Claws-mail", role = 'message_search' },
       properties = { floating = true } },
-
-    { rule       = { class = 'Gajim' },
-      properties = { tag = chat_tag },
-      callback   = awful.client.setslave },
 
     { rule       = { class = 'Gajim', role = 'roster' },
       properties = { },
@@ -37,25 +29,6 @@ rules.rules = {
 
     { rule       = { type = 'splash' },
       properties = { floating = true } },
-
-    { rule_any   = { class = { 'XTerm', 'URxvt' } },
-      properties = {},
-      callback   = function(client)
-        local tags = client:tags()
-        local found
-
-        for _, tag in ipairs(tags) do
-          if tag == chat_tag then
-            found = true
-            break
-          end
-        end
-
-        if found then
-          awful.client.setslave(client)
-        end
-      end,
-    },
 
     {
         rule = {
@@ -121,7 +94,7 @@ client.connect_signal("manage", function (c)
             awful.placement.no_overlap(c)
             awful.placement.no_offscreen(c)
         end
-        if c.first_tag == screen[left_screen].selected_tag then
+        if c.first_tag == screen[1].selected_tag then
           c:move_to_screen(mouse.screen.index)
           c:move_to_tag(mouse.screen.selected_tag)
         end

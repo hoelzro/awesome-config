@@ -5,7 +5,6 @@ local naughty_dbus = require 'naughty.dbus'
 local naughty_defaults = {
   opacity         = 0.75,
   rounded_corners = true,
-  screen          = preferred_screen,
 }
 
 naughty.config.presets.normal           = merge_tables(naughty.config.presets.normal, naughty_defaults)

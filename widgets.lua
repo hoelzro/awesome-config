@@ -133,9 +133,7 @@ for s = 1, screen.count() do
     left:add(mytaglist[s])
     left:add(mypromptbox[s])
 
-    if s == preferred_screen then
-      left:add(remorseful.widget)
-    end
+    left:add(remorseful.widget)
 
     local month_calendar = calendar.month {
       screen       = screen[s],
@@ -162,27 +160,26 @@ for s = 1, screen.count() do
       },
     }
 
-    if s == preferred_screen  then
-      _G.keymap_widget = obvious.keymap_switch()
+    _G.keymap_widget = obvious.keymap_switch()
 
-      right:add(music_widget())
+    right:add(music_widget())
+    right:add(separator())
+    right:add(temp_info())
+    right:add(separator())
+    if has_battery() then
+      right:add(battery())
       right:add(separator())
-      right:add(temp_info())
-      right:add(separator())
-      if has_battery() then
-        right:add(battery())
-        right:add(separator())
-      end
-      right:add(_G.keymap_widget)
-      right:add(mysystray)
-      right:add(separator())
-      right:add(weather())
-      right:add(separator())
-      right:add(textclock('%a %b %d', 60))
-      right:add(textclock(' <b>UTC</b>: %H:%M', 60, 'Z'))
-      right:add(textclock(' <b>PST</b>: %H:%M', 60, 'America/Los_Angeles'))
-      right:add(attached(month_calendar, textclock(' <b>CST</b>: %H:%M:%S', 1, 'America/Chicago')))
     end
+    right:add(_G.keymap_widget)
+    right:add(mysystray)
+    right:add(separator())
+    right:add(weather())
+    right:add(separator())
+    right:add(textclock('%a %b %d', 60))
+    right:add(textclock(' <b>UTC</b>: %H:%M', 60, 'Z'))
+    right:add(textclock(' <b>PST</b>: %H:%M', 60, 'America/Los_Angeles'))
+    right:add(attached(month_calendar, textclock(' <b>CST</b>: %H:%M:%S', 1, 'America/Chicago')))
+
     right:add(separator())
     right:add(mylayoutbox[s])
 

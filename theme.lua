@@ -1,6 +1,8 @@
+local awful     = require 'awful'
 local beautiful = require 'beautiful'
 local gears     = require 'gears'
-local home      = os.getenv 'HOME'
 beautiful.init '/usr/share/awesome/themes/default/theme.lua'
 
-pcall(gears.wallpaper.maximized, '/usr/share/backgrounds/archlinux/archlinux-simplyblack.png', nil, true)
+awful.screen.connect_for_each_screen(function(s)
+  pcall(gears.wallpaper.maximized, '/usr/share/backgrounds/archlinux/archlinux-simplyblack.png', s, true)
+end)

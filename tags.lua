@@ -18,7 +18,7 @@ layouts.max        = layouts[5]
 layouts.default    = layouts.max
 
 tags = {}
-for s = 1, screen.count() do
+awful.screen.connect_for_each_screen(function(s)
     tags[s] = awful.tag({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, s, {
       layouts.max,
       layouts.default,
@@ -30,4 +30,4 @@ for s = 1, screen.count() do
       layouts.default,
       layouts.default,
     })
-end
+end)

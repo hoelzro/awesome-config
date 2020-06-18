@@ -268,7 +268,7 @@ globalkeys = awful.util.table.join(
     key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1) end),
     key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end),
 
-    key({ modkey },            "r",     function () mypromptbox[mouse.screen.index]:run() end),
+    key({ modkey },            "r",     function () mypromptbox[mouse.screen]:run() end),
 
     key({ modkey }, 'Escape', function() _G.keymap_widget:rotate_layout() end),
 
@@ -282,7 +282,7 @@ globalkeys = awful.util.table.join(
 
     key({ modkey }, 'u', function()
      awful.prompt.run({ prompt = 'Insert Unicode digraph: ' },
-      mypromptbox[mouse.screen.index].widget,
+      mypromptbox[mouse.screen].widget,
       function(digraph)
         gears_timer {
           timeout     = 0.1,
@@ -352,39 +352,36 @@ keepasskeys = awful.util.table.join(
   key({ 'Control' }, 'v', noop)
 )
 
-local keynumber = 0
-for s = 1, screen.count() do
-   keynumber = math.min(9, math.max(#tags[s], keynumber));
-end
+local keynumber = 9
 
 for i = 1, keynumber do
-    globalkeys = awful.util.table.join(globalkeys,
-        key({ modkey }, "#" .. i + 9,
-                  function ()
-                    local screen = mouse.screen.index
-                    if tags[screen][i] then
-                      tags[screen][i]:view_only()
-                    end
-                  end),
-        key({ modkey, "Control" }, "#" .. i + 9,
-                  function ()
-                      local screen = mouse.screen.index
-                      if tags[screen][i] then
-                          awful.tag.viewtoggle(tags[screen][i])
-                      end
-                  end),
-        key({ modkey, "Shift" }, "#" .. i + 9,
-                  function ()
-                      if client.focus and tags[client.focus.screen.index][i] then
-                          awful.client.movetotag(tags[client.focus.screen.index][i])
-                      end
-                  end),
-        key({ modkey, "Control", "Shift" }, "#" .. i + 9,
-                  function ()
-                      if client.focus and tags[client.focus.screen.index][i] then
-                          awful.client.toggletag(tags[client.focus.screen.index][i])
-                      end
-                  end))
+  globalkeys = awful.util.table.join(globalkeys,
+    key({ modkey }, "#" .. i + 9,
+      function ()
+        local screen = mouse.screen
+        if tags[screen][i] then
+          tags[screen][i]:view_only()
+        end
+      end),
+    key({ modkey, "Control" }, "#" .. i + 9,
+      function ()
+          local screen = mouse.screen
+          if tags[screen][i] then
+              awful.tag.viewtoggle(tags[screen][i])
+          end
+      end),
+    key({ modkey, "Shift" }, "#" .. i + 9,
+      function ()
+        if client.focus and tags[client.focus.screen][i] then
+          awful.client.movetotag(tags[client.focus.screen][i])
+        end
+      end),
+    key({ modkey, "Control", "Shift" }, "#" .. i + 9,
+      function ()
+        if client.focus and tags[client.focus.screen][i] then
+          awful.client.toggletag(tags[client.focus.screen][i])
+        end
+      end))
 end
 
 root.keys(globalkeys)

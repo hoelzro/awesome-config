@@ -3,6 +3,4 @@ local gears     = require 'gears'
 local home      = os.getenv 'HOME'
 beautiful.init '/usr/share/awesome/themes/default/theme.lua'
 
-for s = 1, screen.count() do
-  pcall(gears.wallpaper.maximized, '/usr/share/backgrounds/archlinux/archlinux-simplyblack.png', s, true)
-end
+pcall(gears.wallpaper.maximized, '/usr/share/backgrounds/archlinux/archlinux-simplyblack.png', nil, true)

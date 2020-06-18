@@ -12,7 +12,6 @@ naughty.config.presets.low              = merge_tables(naughty.config.presets.lo
 naughty.config.presets.critical         = merge_tables(naughty.config.presets.critical, naughty_defaults)
 naughty.config.defaults.opacity         = naughty_defaults.opacity
 naughty.config.defaults.rounded_corners = naughty_defaults.rounded_corners
-naughty.config.defaults.screen          = naughty_defaults.screen
 
 naughty_dbus.config.mapping = {
     {{urgency = '\0'}, naughty.config.presets.low},

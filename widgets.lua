@@ -113,7 +113,7 @@ mytasklist.buttons = awful.util.table.join(
                                               if client.focus then client.focus:raise() end
                                           end))
 
-for s = 1, screen.count() do
+awful.screen.connect_for_each_screen(function(s)
     mypromptbox[s] = awful.widget.prompt()
     mylayoutbox[s] = awful.widget.layoutbox(s)
     mylayoutbox[s]:buttons(awful.util.table.join(
@@ -136,7 +136,7 @@ for s = 1, screen.count() do
     left:add(remorseful.widget)
 
     local month_calendar = calendar.month {
-      screen       = screen[s],
+      screen       = s,
       spacing      = 0,
       margin       = 0,
       start_sunday = true,
@@ -189,4 +189,4 @@ for s = 1, screen.count() do
     top:set_right(right)
 
     mywibar[s]:set_widget(top)
-end
+end)

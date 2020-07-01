@@ -17,7 +17,7 @@ local function run_on_latest(cmd)
     return
   end
 
-  awful.util.spawn(string.format('dbus-send --type=method_call --dest="%s" /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.%s',
+  awful.spawn(string.format('dbus-send --type=method_call --dest="%s" /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.%s',
     latest_address, cmd))
 end
 

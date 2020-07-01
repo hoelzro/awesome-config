@@ -88,6 +88,7 @@ mytaglist.buttons = awful.util.table.join(
                     awful.button({ }, 5, awful.tag.viewprev)
                     )
 local mytasklist = {}
+local client_menu
 mytasklist.buttons = awful.util.table.join(
   awful.button({ }, 1, function (c)
     if not c:isvisible() then
@@ -98,11 +99,11 @@ mytasklist.buttons = awful.util.table.join(
   end),
 
   awful.button({ }, 3, function ()
-    if instance then
-      instance:hide()
-      instance = nil
+    if client_menu then
+      client_menu:hide()
+      client_menu = nil
     else
-      instance = awful.menu.clients({ theme = {width=250} })
+      client_menu = awful.menu.clients({ theme = {width=250} })
     end
   end),
 

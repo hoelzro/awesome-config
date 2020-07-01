@@ -89,6 +89,7 @@ mytaglist.buttons = awful.util.table.join(
                     )
 local mytasklist = {}
 local client_menu
+local client_props_menu
 mytasklist.buttons = awful.util.table.join(
   awful.button({ }, 1, function (c)
     if not c:isvisible() then
@@ -104,6 +105,47 @@ mytasklist.buttons = awful.util.table.join(
       client_menu = nil
     else
       client_menu = awful.menu.clients({ theme = {width=250} })
+    end
+  end),
+
+  awful.button({'Ctrl'}, 3, function(c)
+    if client_props_menu then
+      client_props_menu:hide()
+      client_props_menu = nil
+    else
+      local properties = {
+        'minimized', 'ontop', 'above', 'below', 'fullscreen', 'maximized',
+        'maximized_horizontal', 'maximized_vertical', 'sticky', 'floating',
+      }
+
+      local entries = {}
+
+      for i = 1, #properties do
+        local prop_name = properties[i]
+        local pretty_name = string.gsub(string.gsub(prop_name, '_', ' '), '%f[a-z]([a-z])', string.upper)
+
+        if c[prop_name] then
+          pretty_name = '✓ ' .. prop_name
+        else
+          pretty_name = '  ' .. prop_name
+        end
+
+        local function toggle_prop()
+          c[prop_name] = not c[prop_name]
+        end
+
+        entries[#entries + 1] = {
+          pretty_name,
+          toggle_prop,
+        }
+      end
+      client_props_menu = awful.menu {
+        items = entries,
+        theme = {
+          width = 250,
+        },
+      }
+      client_props_menu:show()
     end
   end),
 

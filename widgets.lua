@@ -89,29 +89,32 @@ mytaglist.buttons = awful.util.table.join(
                     )
 local mytasklist = {}
 mytasklist.buttons = awful.util.table.join(
-                     awful.button({ }, 1, function (c)
-                                              if not c:isvisible() then
-                                                c:tags()[1]:view_only()
-                                              end
-                                              client.focus = c
-                                              c:raise()
-                                          end),
-                     awful.button({ }, 3, function ()
-                                              if instance then
-                                                  instance:hide()
-                                                  instance = nil
-                                              else
-                                                  instance = awful.menu.clients({ width=250 })
-                                              end
-                                          end),
-                     awful.button({ }, 4, function ()
-                                              awful.client.focus.byidx(1)
-                                              if client.focus then client.focus:raise() end
-                                          end),
-                     awful.button({ }, 5, function ()
-                                              awful.client.focus.byidx(-1)
-                                              if client.focus then client.focus:raise() end
-                                          end))
+  awful.button({ }, 1, function (c)
+    if not c:isvisible() then
+      c:tags()[1]:view_only()
+    end
+    client.focus = c
+    c:raise()
+  end),
+
+  awful.button({ }, 3, function ()
+    if instance then
+      instance:hide()
+      instance = nil
+    else
+      instance = awful.menu.clients({ width=250 })
+    end
+  end),
+
+  awful.button({ }, 4, function ()
+    awful.client.focus.byidx(1)
+    if client.focus then client.focus:raise() end
+  end),
+
+  awful.button({ }, 5, function ()
+    awful.client.focus.byidx(-1)
+    if client.focus then client.focus:raise() end
+  end))
 
 awful.screen.connect_for_each_screen(function(s)
     mypromptbox[s] = awful.widget.prompt()

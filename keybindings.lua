@@ -294,7 +294,7 @@ globalkeys = awful.util.table.join(
     end),
 
     key({ modkey, 'Shift' }, 's', function()
-      awful.spawn_with_shell "echo -n '¯\\_(ツ)_/¯' | xclip -i -selection clipboard"
+      awful.spawn.with_shell "echo -n '¯\\_(ツ)_/¯' | xclip -i -selection clipboard"
     end)
 )
 

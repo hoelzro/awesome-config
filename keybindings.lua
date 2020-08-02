@@ -8,6 +8,8 @@ local insert_digraph = require 'unicode-input'
 
 local remorseful = require 'remorseful'
 
+--[[local dashboard = ]] require 'dashboard'
+
 local r_match = require('awful.rules').match
 local iterate = require('awful.client').iterate
 

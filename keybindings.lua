@@ -283,6 +283,12 @@ globalkeys = awful.util.table.join(
       end
     end),
 
+    key({ modkey, 'Shift' }, "Right", audio.next),
+    key({ modkey, 'Shift' }, "Left", audio.previous),
+    key({ modkey, 'Shift' }, "Down", audio.toggle),
+    key({ modkey, 'Shift' }, "KP_Add", louder),
+    key({ modkey, 'Shift' }, "KP_Subtract", quieter),
+
     key({ modkey }, 'u', function()
      awful.prompt.run({ prompt = 'Insert Unicode digraph: ' },
       mypromptbox[mouse.screen].widget,

@@ -304,7 +304,10 @@ globalkeys = awful.util.table.join(
 
     key({ modkey, 'Shift' }, 's', function()
       awful.spawn.with_shell "echo -n '¯\\_(ツ)_/¯' | xclip -i -selection clipboard"
-    end)
+    end),
+
+    -- XXX I'll need to `require 'dashboard'` after I'm done iterating
+    key({ modkey }, 'BackSpace', function() dashboard.visible = true end, function() dashboard.visible = false end)
 )
 
 clientkeys = awful.util.table.join(

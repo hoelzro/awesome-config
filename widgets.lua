@@ -10,7 +10,7 @@ local calendar  = require 'awful.widget.calendar_popup'
 local battery = require 'obvious.battery'
 local music_widget = require 'obvious.music'
 local temp_info = require 'obvious.temp_info'
-require 'obvious.keymap_switch'
+local keymap_switch = require 'obvious.keymap_switch'
 local weather = require 'obvious.weather'
 
 local audio = require 'audio'
@@ -57,7 +57,7 @@ music_widget():buttons(awful.util.table.join(
   awful.button({ }, 5, function() audio.previous() end)
 ))
 
-obvious.keymap_switch.set_layouts { 'us', 'ru' }
+keymap_switch.set_layouts { 'us', 'ru' }
 
 local myawesomemenu = {
    { "manual", terminal .. " -e man awesome" },
@@ -206,7 +206,7 @@ awful.screen.connect_for_each_screen(function(s)
       },
     }
 
-    _G.keymap_widget = obvious.keymap_switch()
+    _G.keymap_widget = keymap_switch()
 
     right:add(music_widget())
     right:add(separator())

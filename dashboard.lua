@@ -170,7 +170,7 @@ dashboard:connect_signal('property::visible', function(self)
 
   if config.public_ip_info ~= false then
     public_ip_widget.text = 'Loading...'
-    awful.spawn.easy_async_with_shell([[curl -s ipinfo.io | jq -r '.ip + " " + .city + ", " + .region']], function(stdout)
+    awful.spawn.easy_async_with_shell([[curl -m 10 -s ipinfo.io | jq -r '.ip + " " + .city + ", " + .region']], function(stdout)
       public_ip_widget.text = string.gsub(stdout, '%s+$', '')
     end)
   end

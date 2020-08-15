@@ -272,6 +272,18 @@ globalkeys = awful.util.table.join(
     key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end),
 
     key({ modkey },            "r",     function () mypromptbox[mouse.screen]:run() end),
+    key({modkey, 'Shift'}, 'r', function()
+      awful.prompt.run {
+        prompt  = 'Run Lua: ',
+        textbox = mypromptbox[mouse.screen].widget,
+        exe_callback = function(code)
+          local f = load(code, 'chunk', 't', setmetatable({
+            c = client.focus,
+          }, {__index = _ENV}))
+          f()
+        end,
+      }
+    end),
 
     key({ modkey }, 'Escape', function() _G.keymap_widget:rotate_layout() end),
 

@@ -89,7 +89,6 @@ mytaglist.buttons = awful.util.table.join(
                     )
 local mytasklist = {}
 local client_menu
-local client_props_menu
 mytasklist.buttons = awful.util.table.join(
   awful.button({ }, 1, function (c)
     if not c:isvisible() then
@@ -109,9 +108,9 @@ mytasklist.buttons = awful.util.table.join(
   end),
 
   awful.button({'Ctrl'}, 3, function(c)
-    if client_props_menu then
-      client_props_menu:hide()
-      client_props_menu = nil
+    if client_menu then
+      client_menu:hide()
+      client_menu = nil
     else
       local properties = {
         'minimized', 'ontop', 'above', 'below', 'fullscreen', 'maximized',
@@ -139,13 +138,13 @@ mytasklist.buttons = awful.util.table.join(
           toggle_prop,
         }
       end
-      client_props_menu = awful.menu {
+      client_menu = awful.menu {
         items = entries,
         theme = {
           width = 250,
         },
       }
-      client_props_menu:show()
+      client_menu:show()
     end
   end),
 

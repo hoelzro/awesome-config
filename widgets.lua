@@ -138,6 +138,22 @@ mytasklist.buttons = awful.util.table.join(
           toggle_prop,
         }
       end
+
+      local function rename_window()
+        awful.prompt.run {
+          prompt       = 'New Name: ',
+          textbox      = mypromptbox[mouse.screen].widget,
+          exe_callback = function(name)
+            c.name      = name
+            c.icon_name = name
+          end,
+        }
+      end
+
+      entries[#entries + 1] = { '----------------------------------------' }
+
+      entries[#entries + 1] = { 'rename window', rename_window }
+
       client_menu = awful.menu {
         items = entries,
         theme = {

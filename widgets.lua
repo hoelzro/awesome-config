@@ -7,6 +7,8 @@ local wibox     = require 'wibox'
 local textclock = require 'wibox.widget.textclock'
 local calendar  = require 'awful.widget.calendar_popup'
 
+local dpi = require('beautiful').xresources.apply_dpi
+
 local battery = require 'obvious.battery'
 local music_widget = require 'obvious.music'
 local temp_info = require 'obvious.temp_info'
@@ -184,7 +186,59 @@ awful.screen.connect_for_each_screen(function(s)
                            awful.button({ }, 5, function () awful.layout.inc(layouts, -1) end)))
     mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, mytaglist.buttons)
 
-    mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
+    mytasklist[s] = awful.widget.tasklist{
+      screen = s,
+      filter = awful.widget.tasklist.filter.currenttags, 
+      buttons = mytasklist.buttons,
+
+      widget_template = {
+        {
+          {
+            {
+              id = 'clienticon',
+              widget = awful.widget.clienticon,
+            },
+            id     = 'icon_margin_role',
+            left   = dpi(4),
+            widget = wibox.container.margin,
+          },
+          {
+              {
+                  id = 'scroll',
+                  layout = wibox.container.scroll.horizontal,
+                  step_function = wibox.container.scroll.step_functions.linear_back_and_forth,
+                  speed = 300, -- XXX figure me out - 300 is good for linear_back_and_forth, but shit for linear_increase
+                  {
+                    id     = 'text_role',
+                    widget = wibox.widget.textbox,
+                  }
+              },
+              id     = 'text_margin_role',
+              left   = dpi(4),
+              right  = dpi(4),
+              widget = wibox.container.margin,
+          },
+          fill_space = true,
+          layout     = wibox.layout.fixed.horizontal
+        },
+        id = 'background_role',
+        widget = wibox.container.background,
+        create_callback = function(self, c)
+          self:get_children_by_id('clienticon')[1].client = c
+
+          local scroll_kid = self:get_children_by_id('scroll')[1]
+          scroll_kid:set_extra_space(10) -- XXX fontmetrics, dpi
+          scroll_kid:pause()
+          scroll_kid:connect_signal('mouse::enter', function()
+            scroll_kid:continue()
+          end)
+          scroll_kid:connect_signal('mouse::leave', function()
+            scroll_kid:pause()
+            scroll_kid:reset_scrolling()
+          end)
+        end,
+      },
+    }
 
     mywibar[s] = awful.wibar({ position = "top", screen = s })
 

@@ -37,7 +37,6 @@ editor           = os.getenv("EDITOR") or "vim"
 editor_cmd       = terminal .. " -e " .. editor
 volume_delta     = 5
 
-require 'dmux'
 require 'local-loader'
 
 require 'awful.autofocus'

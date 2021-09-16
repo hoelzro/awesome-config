@@ -2,7 +2,6 @@ local audio       = require 'audio'
 local awful       = require 'awful'
 local gears_timer = require 'gears.timer'
 local naughty     = require 'naughty'
-local volume      = require 'volume'
 
 local insert_digraph = require 'unicode-input'
 
@@ -24,59 +23,9 @@ local function replaced_notify()
   end
 end
 
-local volume_notify = replaced_notify()
-local mfact_notify  = replaced_notify()
-local mcount_notify = replaced_notify()
-
-local volume_icon_base = '/usr/share/icons/gnome/24x24/status/'
-
-local function do_volume_notification(args)
-  if args.icon then
-    args.icon = volume_icon_base .. args.icon
-  end
-
-  volume_notify(args)
-end
-
-local function louder()
-    local volume = volume.increment(volume_delta)
-
-    do_volume_notification {
-      title   = 'Volume Changed',
-      text    = tostring(volume) .. '%',
-      icon    = 'stock_volume-max.png',
-      opacity = volume / 100,
-    }
-end
-
-local function quieter()
-    local volume = volume.decrement(volume_delta)
-
-    do_volume_notification {
-      title   = 'Volume Changed',
-      text    = tostring(volume) .. '%',
-      icon    = 'stock_volume-min.png',
-      opacity = volume / 100,
-    }
-end
-
-local function togglemute()
-    local state = volume.toggle()
-
-    if state then
-      do_volume_notification {
-        title = 'Volume Changed',
-        text  = 'Muted',
-        icon  = 'stock_volume-mute.png'
-      }
-    else
-      do_volume_notification {
-        title = 'Volume Changed',
-        text  = 'Unmuted',
-        icon  = 'stock_volume-max.png'
-      }
-    end
-end
+local mfact_notify      = replaced_notify()
+local mcount_notify     = replaced_notify()
+local brightness_notify = replaced_notify()
 
 local function noop()
 end
@@ -96,8 +45,7 @@ do
       brightness_level = 0
     end
 
-    -- I know, not volume...
-    do_volume_notification {
+    do_brightness_notification {
       title = 'Brightness Changed',
       text  = tostring(brightness_level) .. '%'
     }
@@ -112,8 +60,7 @@ do
       brightness_level = 100
     end
 
-    -- I know, not volume...
-    do_volume_notification {
+    do_brightness_notification {
       title = 'Brightness Changed',
       text  = tostring(brightness_level) .. '%'
     }
@@ -227,9 +174,9 @@ globalkeys = awful.util.table.join(
       end
     end),
 
-    key({                   }, "XF86AudioRaiseVolume", louder),
-    key({                   }, "XF86AudioLowerVolume", quieter),
-    key({                   },        "XF86AudioMute", togglemute),
+    key({                   }, "XF86AudioRaiseVolume", function() audio.louder(volume_delta) end),
+    key({                   }, "XF86AudioLowerVolume", function() audio.quieter(volume_delta) end),
+    key({                   },        "XF86AudioMute", audio.togglemute),
 
     key({                   },        "XF86AudioNext", audio.next),
     key({                   },        "XF86AudioPrev", audio.previous),
@@ -298,8 +245,8 @@ globalkeys = awful.util.table.join(
     key({ modkey, 'Shift' }, "Right", audio.next),
     key({ modkey, 'Shift' }, "Left", audio.previous),
     key({ modkey, 'Shift' }, "Down", audio.toggle),
-    key({ modkey, 'Shift' }, "KP_Add", louder),
-    key({ modkey, 'Shift' }, "KP_Subtract", quieter),
+    key({ modkey, 'Shift' }, "KP_Add", function() audio.louder(volume_delta) end),
+    key({ modkey, 'Shift' }, "KP_Subtract", function() audio.quieter(volume_delta) end),
 
     key({ modkey }, 'u', function()
      awful.prompt.run({ prompt = 'Insert Unicode digraph: ' },

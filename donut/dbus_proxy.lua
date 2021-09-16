@@ -227,7 +227,7 @@ local function generate_methods(dbus, bus_name, object_path, interfaces)
 end
 
 local function dbus_proxy(dbus, bus_name, object_path)
-  local xml = assert(dbus_call {
+  local xml, err = dbus_call {
     dbus           = dbus,
     bus_name       = bus_name,
     object_path    = object_path,
@@ -235,8 +235,14 @@ local function dbus_proxy(dbus, bus_name, object_path)
     method_name    = 'Introspect',
     parameters     = {},
     reply_type     = '(s)',
-  })
-  local lom = assert(parse_xml(xml))
+  }
+  if not xml then
+    return nil, err
+  end
+  local lom, err = parse_xml(xml)
+  if not lom then
+    return nil, err
+  end
   local interfaces = gather_interfaces(lom)
   return generate_methods(dbus, bus_name, object_path, interfaces)
 end

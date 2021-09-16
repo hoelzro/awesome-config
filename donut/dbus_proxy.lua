@@ -7,7 +7,10 @@ local glib = lgi.require 'GLib'
 local parse_xml = require('lxp.lom').parse
 
 local PRIMITIVE_VARIANT_TYPES = {
+  b = true,
+  o = true,
   s = true,
+  u = true,
 }
 
 -- XXX only call me from dbus_call
@@ -34,6 +37,15 @@ local function decode_variant(v)
     else
       return table.unpack(contents, 1, n)
     end
+  elseif first == 'a' then -- array
+    local contents = {}
+    local n = v:n_children()
+
+    for i = 0, n - 1 do
+      contents[i + 1] = decode_variant(v:get_child_value(i))
+    end
+
+    return contents
   elseif vtype == 'v' then
     return decode_variant(v.value)
   elseif PRIMITIVE_VARIANT_TYPES[vtype] then
@@ -131,6 +143,13 @@ local function gather_interfaces(lom)
 end
 
 local function value_as_variant(spec, value)
+  -- if we already have a variant, just go with that
+  if glib.Variant:is_type_of(value) then
+    assert(spec.type == 'v')
+    -- XXX what if it's already wrapping a variant?
+    return glib.Variant('v', value)
+  end
+
   if type(value) == 'string' then
     assert(spec.type == 's')
     return glib.Variant('s', value)

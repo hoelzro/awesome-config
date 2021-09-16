@@ -38,7 +38,13 @@ local function dbus_wrapper(dbus)
   return setmetatable({}, mt)
 end
 
+local session_bus
+
 function module.get_session_bus()
+  if session_bus then
+    return session_bus
+  end
+
   local bus_address = os.getenv 'DBUS_SESSION_BUS_ADDRESS'
   if not bus_address then
     return nil, 'Unable to determine session bus address'
@@ -59,7 +65,8 @@ function module.get_session_bus()
 
   local ok, err_or_result = pcall(p.get, p)
   if ok then
-    return dbus_wrapper(err_or_result)
+    session_bus = dbus_wrapper(err_or_result)
+    return session_bus
   else
     return nil, err_or_result
   end

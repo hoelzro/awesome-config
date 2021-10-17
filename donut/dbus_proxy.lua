@@ -15,11 +15,9 @@ local PRIMITIVE_VARIANT_TYPES = {
 
 -- XXX only call me from dbus_call
 local function decode_variant(v)
-  -- XXX less shitty way to detect variant
-  if type(v) ~= 'userdata' then
+  if not glib.Variant:is_type_of(v) then
     return v
   end
-  assert(v._type == glib.Variant)
 
   local vtype = v.type
   local first = string.sub(vtype, 1, 1)

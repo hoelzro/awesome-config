@@ -4,5 +4,5 @@ local gears     = require 'gears'
 beautiful.init '/usr/share/awesome/themes/default/theme.lua'
 
 awful.screen.connect_for_each_screen(function(s)
-  pcall(gears.wallpaper.maximized, '/usr/share/backgrounds/archlinux/archlinux-simplyblack.png', s, true)
+  pcall(gears.wallpaper.maximized, '/usr/share/backgrounds/archlinux/simple.png', s, true)
 end)

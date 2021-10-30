@@ -48,6 +48,9 @@ local function attached(attacher, attached)
   return attached
 end
 
+awesome.register_xproperty('_NET_WM_ICON_NAME', 'string')
+awesome.register_xproperty('WM_ICON_NAME', 'string')
+
 music_widget.set_format  '<b>$icon</b> <marquee>$artist - $title</marquee>'
 music_widget.set_backend 'mpris'
 music_widget.set_length(50)
@@ -146,8 +149,10 @@ mytasklist.buttons = awful.util.table.join(
           prompt       = 'New Name: ',
           textbox      = mypromptbox[mouse.screen].widget,
           exe_callback = function(name)
-            c.name      = name
-            c.icon_name = name
+            c.name = name
+
+            c:set_xproperty('_NET_WM_ICON_NAME', name)
+            c:set_xproperty('WM_ICON_NAME', name)
           end,
         }
       end

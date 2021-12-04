@@ -1,4 +1,5 @@
 local awful   = require 'awful'
+local cqueues = require 'cqueues'
 local donut   = require 'donut'
 local naughty = require 'naughty'
 
@@ -54,51 +55,85 @@ local function on_mute_change(_, _, _, _, _, params)
   end
 end
 
-local pulse_bus
+local get_pulse_bus
 
-donut.run(function()
-  local session_bus = assert(donut.get_session_bus())
-  local pulse_lookup = session_bus:proxy('org.PulseAudio1', '/org/pulseaudio/server_lookup1')
-  local pulse_bus_address = assert(pulse_lookup:Get('org.PulseAudio.ServerLookup1', 'Address'))
-  pulse_bus = assert(donut.get_bus(pulse_bus_address))
+local function attempt_pulse_connection()
+  donut.run(function()
+    while true do
+      print 'trying to connect to pulseaudio...'
+      local bus, err = pcall(function() return assert(get_pulse_bus()) end)
+      if bus then
+        return
+      end
+      print('got error: ' .. tostring(err))
+      cqueues.sleep(5)
+    end
+  end, function(ok, err)
+    if not ok then
+      alert('failed to initialize audio stuff:', err)
+    end
+  end)
+end
 
-  local pulse_core = pulse_bus:proxy('org.PulseAudio.Core1', '/org/pulseaudio/core1')
-  assert(pulse_core:ListenForSignal('org.PulseAudio.Core1.Device.VolumeUpdated', {}))
-  assert(pulse_core:ListenForSignal('org.PulseAudio.Core1.Device.MuteUpdated', {}))
+do
+  local pulse_bus
+  local is_subscribed_mpris
 
-  pulse_bus:subscribe {
-    interface = 'org.PulseAudio.Core1.Device',
-    member    = 'VolumeUpdated',
-    callback  = on_volume_change,
-  }
+  --[[local]] function get_pulse_bus()
+    if pulse_bus then
+      return pulse_bus
+    end
 
-  pulse_bus:subscribe {
-    interface = 'org.PulseAudio.Core1.Device',
-    member    = 'MuteUpdated',
-    callback  = on_mute_change,
-  }
+    local session_bus = assert(donut.get_session_bus())
+    local pulse_lookup = assert(session_bus:proxy('org.PulseAudio1', '/org/pulseaudio/server_lookup1'))
+    local pulse_bus_address = assert(pulse_lookup:Get('org.PulseAudio.ServerLookup1', 'Address'))
+    pulse_bus = assert(donut.get_bus(pulse_bus_address))
 
-  session_bus:subscribe {
-    object_path = '/org/mpris/MediaPlayer2',
-    interface   = 'org.freedesktop.DBus.Properties',
-    member      = 'PropertiesChanged',
+    pulse_bus.on_notify:connect(function(...)
+      alert('connection closed =| ' .. tostring(os.date()))
+      print(...)
+      pulse_bus = nil
+      attempt_pulse_connection()
+    end, 'closed')
 
-    -- XXX these are always run on the main coroutine, it seems - should I make
-    --     that not the case in donut.dbus? would that affect usage of naughty above?
-    callback = function(_, sender)
-      donut.run(function()
-        -- XXX detecting the latest_proxy getting off the bus would be nice!
-        latest_proxy = session_bus:proxy(sender, '/org/mpris/MediaPlayer2')
-      end, function() end)
-    end,
-  }
+    local pulse_core = pulse_bus:proxy('org.PulseAudio.Core1', '/org/pulseaudio/core1')
+    assert(pulse_core:ListenForSignal('org.PulseAudio.Core1.Device.VolumeUpdated', {}))
+    assert(pulse_core:ListenForSignal('org.PulseAudio.Core1.Device.MuteUpdated', {}))
 
-  -- XXX detect who, if anyone, is currently playing?
-end, function(ok, err)
-  if not ok then
-    print('failed to initialize audio stuff:', err)
+    pulse_bus:subscribe {
+      interface = 'org.PulseAudio.Core1.Device',
+      member    = 'VolumeUpdated',
+      callback  = on_volume_change,
+    }
+
+    pulse_bus:subscribe {
+      interface = 'org.PulseAudio.Core1.Device',
+      member    = 'MuteUpdated',
+      callback  = on_mute_change,
+    }
+
+    if not is_subscribed_mpris then
+      session_bus:subscribe {
+        object_path = '/org/mpris/MediaPlayer2',
+        interface   = 'org.freedesktop.DBus.Properties',
+        member      = 'PropertiesChanged',
+
+        -- XXX these are always run on the main coroutine, it seems - should I make
+        --     that not the case in donut.dbus? would that affect usage of naughty above?
+        callback = function(_, sender)
+          donut.run(function()
+            -- XXX detecting the latest_proxy getting off the bus would be nice!
+            latest_proxy = session_bus:proxy(sender, '/org/mpris/MediaPlayer2')
+          end, function() end)
+        end,
+      }
+      is_subscribed_mpris = true
+      -- XXX detect who, if anyone, is currently playing?
+    end
+
+    return pulse_bus
   end
-end)
+end
 
 local function run_on_latest(cmd)
   if not latest_proxy then
@@ -135,11 +170,9 @@ local lgi = require 'lgi'
 local glib = lgi.require 'GLib'
 
 function audio.louder(delta)
-  if not pulse_bus then
-    return
-  end
-
   donut.run(function()
+    local pulse_bus = assert(get_pulse_bus())
+
     -- XXX keep the proxy around and refresh it based on signals?
     local pulse_core = assert(pulse_bus:proxy('org.PulseAudio.Core1', '/org/pulseaudio/core1'))
     local default_sink = assert(pulse_core:Get('org.PulseAudio.Core1', 'FallbackSink'))
@@ -167,11 +200,8 @@ function audio.quieter(delta)
 end
 
 function audio.togglemute()
-  if not pulse_bus then
-    return
-  end
-
   donut.run(function()
+    local pulse_bus = assert(get_pulse_bus())
     -- XXX keep the proxy around and refresh it based on signals?
     local pulse_core = assert(pulse_bus:proxy('org.PulseAudio.Core1', '/org/pulseaudio/core1'))
     local default_sink = assert(pulse_core:Get('org.PulseAudio.Core1', 'FallbackSink'))
@@ -189,5 +219,7 @@ function audio.togglemute()
     end
   end)
 end
+
+attempt_pulse_connection()
 
 return audio

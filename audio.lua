@@ -28,7 +28,13 @@ end
 
 local latest_proxy
 
-local function on_volume_change(_, _, _, _, _, params)
+local function on_volume_change(_, _, path, _, _, params)
+  -- my microphone will broadcast weird volume change events, so I'm going to
+  -- just ignore those from any source
+  if string.match(path, '^/org/pulseaudio/core1/source') then
+    return
+  end
+
   local volume = params[1][1]
   do_volume_notification {
     title   = 'Volume Changed',

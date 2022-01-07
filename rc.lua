@@ -37,10 +37,35 @@ editor           = os.getenv("EDITOR") or "vim"
 editor_cmd       = terminal .. " -e " .. editor
 volume_delta     = 5
 
+local naughty = require 'naughty'
+-- shortcut for naughty.notify
+function alert(msg)
+  naughty.notify {
+    title = 'Alert!',
+    text  = tostring(msg),
+  }
+end
+
+function dir(object, pattern)
+  object     = object or _G
+  local keys = {}
+
+  for k in pairs(object) do
+    if type(k) == 'string' then
+      if not pattern or k:match(pattern) then
+        keys[#keys + 1] = k
+      end
+    end
+  end
+
+  table.sort(keys)
+
+  alert(table.concat(keys, '\n'))
+end
+
 require 'local-loader'
 
 require 'awful.autofocus'
-local naughty = require 'naughty'
 
 require 'naughty-screen'
 require 'startup-programs'
@@ -71,29 +96,4 @@ end
 
 if type(posix) == 'table' then
   posix.setenv('PATH', table.concat(paths, ':'))
-end
-
--- shortcut for naughty.notify
-function alert(msg)
-  naughty.notify {
-    title = 'Alert!',
-    text  = tostring(msg),
-  }
-end
-
-function dir(object, pattern)
-  object     = object or _G
-  local keys = {}
-
-  for k in pairs(object) do
-    if type(k) == 'string' then
-      if not pattern or k:match(pattern) then
-        keys[#keys + 1] = k
-      end
-    end
-  end
-
-  table.sort(keys)
-
-  alert(table.concat(keys, '\n'))
 end

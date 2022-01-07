@@ -2,9 +2,10 @@ local error        = error
 local pcall        = pcall
 local string_lower = string.lower
 
-local client     = client
-local fake_input = root.fake_input
-local timer      = timer
+local client      = client
+local gears_timer = require 'gears.timer'
+local fake_input  = root.fake_input
+local timer       = timer
 
 local digraphs = require 'digraphs'
 
@@ -49,35 +50,54 @@ local function press_key(key)
   fake_input('key_release', key)
 end
 
-local function insert_unicode_digraph(digraph)
-  local c = client.focus
+local function insert_unicode_character(c)
+  local client = client.focus
 
-  if not c then
+  if not client then
     return
   end
 
-  local codepoint_chars = digraphs[digraph]
+  local codepoint = utf8.codepoint(c)
+  local codepoint_chars = {}
 
-  if not codepoint_chars then
-    return
+  for ch in string.gmatch(string.format('%x', codepoint), '.') do
+    codepoint_chars[#codepoint_chars + 1] = ch
   end
 
-  if is_urxvt(c) then -- urxvt wants the codepoint typed in with Shift and Ctrl down
-    with_keys_down('Shift_L', 'Control_R', function()
-      for i = 1, #codepoint_chars do
-        press_key(codepoint_chars[i])
-      end
-    end)
-  else -- GTK applications (which is what I'm assuming here) want Shift+Ctrl+u, then
-       -- then the codepoint, then release
-    with_keys_down('Shift_L', 'Control_R', function()
-      press_key 'u'
+  gears_timer {
+    timeout     = 0.1,
+    autostart   = true,
+    single_shot = true,
+    callback    = function()
+      if is_urxvt(client) then -- urxvt wants the codepoint typed in with Shift and Ctrl down
+        with_keys_down('Shift_L', 'Control_R', function()
+          for i = 1, #codepoint_chars do
+            press_key(codepoint_chars[i])
+          end
+        end)
+      else -- GTK applications (which is what I'm assuming here) want Shift+Ctrl+u, then
+           -- then the codepoint, then release
+        with_keys_down('Shift_L', 'Control_R', function()
+          press_key 'u'
 
-      for i = 1, #codepoint_chars do
-        press_key(codepoint_chars[i])
+          for i = 1, #codepoint_chars do
+            press_key(codepoint_chars[i])
+          end
+        end)
       end
-    end)
-  end
+    end,
+  }
 end
 
-return insert_unicode_digraph
+local function insert_unicode_digraph(digraph)
+  if not digraphs[digraph] then
+    return
+  end
+
+  insert_unicode_character(digraphs[digraph])
+end
+
+return {
+  insert_unicode_digraph = insert_unicode_digraph,
+  insert_unicode_character = insert_unicode_character,
+}

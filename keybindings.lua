@@ -165,7 +165,7 @@ globalkeys = awful.util.table.join(
 
       if keepass_client then
         local current_tag = awful.tag.selected(mouse.screen)
-        awful.client.movetotag(current_tag, keepass_client)
+        keepass_client:move_to_tag(current_tag)
         client.focus = keepass_client
         keepass_client:raise()
       else
@@ -338,7 +338,7 @@ for i = 1, keynumber do
     key({ modkey, "Shift" }, "#" .. i + 9,
       function ()
         if client.focus and tags[client.focus.screen][i] then
-          awful.client.movetotag(tags[client.focus.screen][i])
+          client.focus:move_to_tag(tags[client.focus.screen][i])
         end
       end),
     key({ modkey, "Control", "Shift" }, "#" .. i + 9,

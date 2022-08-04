@@ -150,7 +150,7 @@ local function run_on_latest(cmd)
     assert(latest_proxy[cmd](latest_proxy))
   end, function(ok, err)
     if not ok then
-      print(string.format('failed to run MPRIS command %q: %s'), cmd, err)
+      print(string.format('failed to run MPRIS command %q: %s', cmd, err))
     end
   end)
 end

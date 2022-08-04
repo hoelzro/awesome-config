@@ -224,7 +224,29 @@ local function generate_methods(dbus, bus_name, object_path, interfaces)
   return generated
 end
 
+-- I *think* that just 'k' is correct here - the keys are dbus connection objects,
+-- so we shouldn't be restricting them from getting GC'd.  The values are
+-- (bus_name, object_path) → proxy object tables, and those should *not* be reachable
+-- from elsewhere in Lua land, so using 'v' for the mode would result in them getting
+-- collected every time
+local proxy_cache = setmetatable({}, {__mode = 'k'})
+
 local function dbus_proxy(dbus, bus_name, object_path)
+  local this_bus_cache = proxy_cache[dbus]
+  if not this_bus_cache then
+    -- values need to be weak, since proxy_cache has strong values but we don't want
+    -- to keep proxy objects around if the rest of the program has stopped using them
+    this_bus_cache = setmetatable({}, {__mode = 'v'})
+    proxy_cache[dbus] = this_bus_cache
+  end
+
+  local cache_key = bus_name .. '\x1f' .. object_path
+
+  local cached_proxy = this_bus_cache[cache_key]
+  if cached_proxy then
+    return cached_proxy
+  end
+
   local xml, err = dbus_call {
     dbus           = dbus,
     bus_name       = bus_name,
@@ -242,7 +264,9 @@ local function dbus_proxy(dbus, bus_name, object_path)
     return nil, err
   end
   local interfaces = gather_interfaces(lom)
-  return generate_methods(dbus, bus_name, object_path, interfaces)
+  local proxy = generate_methods(dbus, bus_name, object_path, interfaces)
+  this_bus_cache[cache_key] = proxy
+  return proxy
 end
 
 return dbus_proxy

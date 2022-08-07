@@ -231,8 +231,6 @@ globalkeys = awful.util.table.join(
       }
     end),
 
-    key({ modkey }, 'Escape', function() _G.keymap_widget:rotate_layout() end),
-
     key({ modkey }, 'f', function()
       local wibars = root.wibars
 

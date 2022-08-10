@@ -10,6 +10,7 @@ local calendar  = require 'awful.widget.calendar_popup'
 local dpi = require('beautiful').xresources.apply_dpi
 
 local battery = require 'obvious.battery'
+battery.preferred_backend = 'file'
 local music_widget = require 'obvious.music'
 local temp_info = require 'obvious.temp_info'
 

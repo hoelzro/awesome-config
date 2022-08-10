@@ -78,9 +78,9 @@ local mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
                                      menu = mymainmenu })
 local mysystray = wibox.widget.systray()
 
-local mywibar = {}
+local mywibar = setmetatable({}, {__mode = 'k'})
 root.wibars  = mywibar
-mypromptbox = {}
+mypromptbox = setmetatable({}, {__mode = 'k'})
 local mylayoutbox = {}
 local mytaglist = {}
 mytaglist.buttons = awful.util.table.join(

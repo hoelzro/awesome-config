@@ -9,8 +9,7 @@ local calendar  = require 'awful.widget.calendar_popup'
 
 local dpi = require('beautiful').xresources.apply_dpi
 
-local battery = require 'obvious.battery'
-battery.preferred_backend = 'file'
+local battery = require 'widgets.battery'
 local music_widget = require 'obvious.music'
 local temp_info = require 'obvious.temp_info'
 
@@ -19,24 +18,6 @@ local weather = require 'obvious.weather'
 local audio = require 'audio'
 local remorseful = require 'remorseful'
 local safe_restart = require 'safe-restart'
-
-local has_battery
-
-do
-  local found_battery
-
-  function has_battery()
-    if found_battery == nil then
-      local pipe   = io.popen 'acpi'
-      local output = pipe:read '*a'
-      pipe:close()
-
-      found_battery = not not string.match(output, '^Battery 0') -- force true/false
-    end
-
-    return found_battery
-  end
-end
 
 local function separator()
   local sep = wibox.widget.textbox()
@@ -283,8 +264,9 @@ awful.screen.connect_for_each_screen(function(s)
     right:add(separator())
     right:add(temp_info())
     right:add(separator())
-    if has_battery() then
-      right:add(battery())
+    local battery_widget = battery()
+    if battery_widget then
+      right:add(battery_widget)
       right:add(separator())
     end
     right:add(mysystray)

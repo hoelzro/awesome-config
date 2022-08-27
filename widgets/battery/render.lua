@@ -1,6 +1,4 @@
-local floor   = math.floor
-local sformat = string.format
-local tconcat = table.concat
+local floor = math.floor
 
 local STATUS_TEXT = {
   charged           = '↯',
@@ -16,23 +14,7 @@ local STATUS_TEXT = {
   ['not charging']  = '⌁',
 }
 
-local escape
-local has_awful_util, awful_util = pcall(require, 'awful.util')
-if has_awful_util then
-  escape = awful_util.escape
-else
-  escape = function(s) return s end
-end
-
-local function colorize(color, text)
-  return sformat('<span foreground="%s">%s</span>', color, text)
-end
-
--- XXX add blinking
-
-local function render(batteries)
-  local markup = {}
-
+local function render(renderer, batteries)
   local all_status = 'charged'
   local eta
   local total_charge = 0
@@ -66,24 +48,23 @@ local function render(batteries)
     color = 'red'
   end
 
-  local markup = {}
-  markup[#markup + 1] = colorize(color, escape(STATUS_TEXT[all_status] or STATUS_TEXT.unknown))
+  renderer:push_fg_color(color)
+  renderer:print(STATUS_TEXT[all_status] or STATUS_TEXT.unknown)
+  renderer:pop_fg_color()
 
   if eta then
       local hours   = floor(eta / 60)
       local minutes = eta % 60
 
-      markup[#markup + 1] = escape(sformat('%02d:%02d', hours, minutes))
+      renderer:printf(' %02d:%02d', hours, minutes)
   end
 
   for i = 1, #batteries do
     local battery = batteries[i]
     local charge = battery.charge or 0
 
-    markup[#markup + 1] = escape(sformat('%d%%', charge))
+    renderer:printf(' %d%%', charge)
   end
-
-  return tconcat(markup, ' ')
 end
 
 return render

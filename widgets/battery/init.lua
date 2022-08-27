@@ -4,6 +4,7 @@ local timer = require 'gears.timer'
 
 local backends = require 'widgets.battery.backends'
 local render = require 'widgets.battery.render'
+local make_renderer = require 'widgets.renderer'
 
 local backend = backends.sysfs:new()
 local has_battery = backend:detect()
@@ -27,7 +28,9 @@ local function make_widget()
 
     callback = function()
       local state = backend:state()
-      w:set_markup(render(state))
+      local r = make_renderer()
+      render(r, state)
+      w:set_markup(r:markup())
     end,
   }
 
@@ -35,7 +38,9 @@ local function make_widget()
     stdout = function(line)
       if string.sub(line, 1, #'battery') == 'battery' then
         local state = backend:state()
-        w:set_markup(render(state))
+        local r = make_renderer()
+        render(r, state)
+        w:set_markup(r:markup())
       end
     end,
 

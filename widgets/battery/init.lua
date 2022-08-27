@@ -1,5 +1,6 @@
 local sformat = string.format
 
+local awful = require 'awful'
 local spawn = require 'awful.spawn'
 local wibox = require 'wibox'
 local timer = require 'gears.timer'
@@ -77,6 +78,9 @@ local function make_widget()
   if type(spawn_err) == 'string' then
     log('failed to spawn acpi_listen: ' .. spawn_err)
   end
+
+  w:buttons(awful.util.table.join(
+    awful.button({}, 1, refresh)))
 
   return w
 end

@@ -48,6 +48,11 @@ local function render(renderer, batteries)
     color = 'red'
   end
 
+  local should_blink = eta and eta < 30
+  if should_blink then
+    renderer:push_blink()
+  end
+
   renderer:push_fg_color(color)
   renderer:print(STATUS_TEXT[all_status] or STATUS_TEXT.unknown)
   renderer:pop_fg_color()
@@ -64,6 +69,10 @@ local function render(renderer, batteries)
     local charge = battery.charge or 0
 
     renderer:printf(' %d%%', charge)
+  end
+
+  if should_blink then
+    renderer:pop_blink()
   end
 end
 

@@ -1,3 +1,5 @@
+local sformat = string.format
+
 local spawn = require 'awful.spawn'
 local wibox = require 'wibox'
 local timer = require 'gears.timer'
@@ -21,26 +23,49 @@ local function make_widget()
     widget = wibox.widget.textbox,
   }
 
+  local reverse_color
+  local prev_render
+  local blink_timer = timer {
+    timeout = 1,
+    callback = function()
+      local markup = prev_render:markup()
+      if reverse_color then
+        w:set_markup(sformat('<span background="red">%s</span>', markup))
+      else
+        w:set_markup(markup)
+      end
+
+      reverse_color = not reverse_color
+    end,
+  }
+
+  local function refresh()
+    local state = backend:state()
+    local r = make_renderer()
+    render(r, state)
+
+    if r.is_blinking and not blink_timer.started then
+      blink_timer:start()
+    elseif blink_timer.started and not r.is_blinking then
+      blink_timer:stop()
+    end
+
+    w:set_markup(r:markup())
+    prev_render = r
+  end
+
   timer {
     timeout   = 60,
     autostart = true,
     call_now  = true,
 
-    callback = function()
-      local state = backend:state()
-      local r = make_renderer()
-      render(r, state)
-      w:set_markup(r:markup())
-    end,
+    callback = refresh,
   }
 
   local spawn_err = spawn.with_line_callback('acpi_listen', {
     stdout = function(line)
       if string.sub(line, 1, #'battery') == 'battery' then
-        local state = backend:state()
-        local r = make_renderer()
-        render(r, state)
-        w:set_markup(r:markup())
+        refresh()
       end
     end,
 

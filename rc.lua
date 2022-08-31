@@ -97,3 +97,5 @@ end
 if type(posix) == 'table' then
   posix.setenv('PATH', table.concat(paths, ':'))
 end
+
+start_time = os.time()

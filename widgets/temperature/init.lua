@@ -6,12 +6,8 @@ local backends = require 'widgets.temperature.backends'
 local render = require 'widgets.temperature.render'
 local make_renderer = require 'widgets.renderer'
 
-local backend = backends.filesystem:new {
-  -- XXX hardcoded!
-  -- Look for /sys/class/thermal/thermal_zone*/type == acpitz
-  -- Look for /sys/class/hwmon/hwmon*/name == k10temp
-  target = '/sys/class/thermal/thermal_zone0/temp',
-}
+local backend = backends.sysfs:new()
+assert(backend:detect())
 
 local log = print
 

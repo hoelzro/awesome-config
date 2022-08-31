@@ -48,7 +48,7 @@ local function render(renderer, batteries)
     color = 'red'
   end
 
-  local should_blink = eta and eta < 30
+  local should_blink = eta and eta < 30 and all_status == 'discharging'
   if should_blink then
     renderer:push_blink()
   end

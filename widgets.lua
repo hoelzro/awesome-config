@@ -11,7 +11,7 @@ local dpi = require('beautiful').xresources.apply_dpi
 
 local battery = require 'widgets.battery'
 local music_widget = require 'obvious.music'
-local temp_info = require 'obvious.temp_info'
+local temp_widget = require 'widgets.temperature'
 
 local weather = require 'obvious.weather'
 
@@ -262,7 +262,7 @@ awful.screen.connect_for_each_screen(function(s)
 
     right:add(music_widget())
     right:add(separator())
-    right:add(temp_info())
+    right:add(temp_widget())
     right:add(separator())
     local battery_widget = battery()
     if battery_widget then

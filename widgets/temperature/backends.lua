@@ -2,6 +2,8 @@ local open = io.open
 local sformat = string.format
 local unpack = unpack or table.unpack
 
+local gio = require('lgi').Gio
+
 local HWMON_PREFIX = '/sys/class/hwmon'
 
 local backends = {}
@@ -21,6 +23,23 @@ local function read_first_line(filename) -- {{{
 
   return line
 end -- }}}
+
+local function listdir(dirname)
+  local dir = gio.File.new_for_path(dirname)
+  local files = {}
+
+  local fe = dir:enumerate_children('standard::name', gio.FileQueryInfoFlags.NONE)
+  while true do
+    local fi = fe:next_file()
+    if not fi then
+      break
+    end
+    files[#files + 1] = fi:get_name()
+  end
+  fe:close()
+
+  return files
+end
 
 local function load_hwmon_data(hwmon_path)
   local temperatures = {}
@@ -43,18 +62,25 @@ end
 
 local function load_sysfs_hwmon_data()
   local result = {}
-  local hwnum = 0
-  while true do
-    local hwmon_path = sformat('%s/hwmon%d', HWMON_PREFIX, hwnum)
+
+  local hwmon_subdirs = listdir(HWMON_PREFIX)
+  for i = 1, #hwmon_subdirs do
+    local subdir = hwmon_subdirs[i]
+    if not string.match(subdir, '^hwmon%d+$') then
+      goto continue
+    end
+
+    local hwmon_path = HWMON_PREFIX .. '/' .. subdir
     local hwmon_name = read_first_line(hwmon_path .. '/name')
     if not hwmon_name then
-      break
+      goto continue
     end
 
     result[hwmon_name] = load_hwmon_data(hwmon_path)
 
-    hwnum = hwnum + 1
+    ::continue::
   end
+
   return result
 end
 

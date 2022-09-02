@@ -1,6 +1,7 @@
 local floor   = math.floor
 local open    = io.open
 local sformat = string.format
+local slower  = string.lower
 
 local backends = {}
 
@@ -105,7 +106,7 @@ function raw_data_backend:new(options) -- {{{
   for i = 1, #options.batteries do
     local battery = options.batteries[i]
     assert(type(battery.charge) == 'number', type(battery.charge))
-    assert(BATTERY_STATES[battery.status], battery.status)
+    assert(BATTERY_STATES[slower(battery.status)], battery.status)
     if battery.time then
       assert(type(battery.time) == 'number', type(battery.time))
     end

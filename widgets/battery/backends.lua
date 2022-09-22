@@ -1,4 +1,3 @@
-local floor   = math.floor
 local open    = io.open
 local sformat = string.format
 local slower  = string.lower
@@ -58,21 +57,12 @@ function fs_backend:state() -- {{{
   for i = 1, #self.batteries do
     local battery_path = self.batteries[i]
 
-    local battery_status = assert(read_first_line(sformat('%s/status', battery_path))):lower()
-    local battery_charge = tonumber(assert(read_first_line(sformat('%s/capacity', battery_path))))
-
-    local capacity_microwh = tonumber(assert(read_first_line(sformat('%s/energy_now', battery_path))))
-    local rate_microw = tonumber(assert(read_first_line(sformat('%s/power_now', battery_path))))
-
     states[i] = {
-      charge = battery_charge,
-      status = battery_status,
+      status      = assert(read_first_line(sformat('%s/status', battery_path))),
+      power_now   = tonumber(assert(read_first_line(sformat('%s/power_now', battery_path)))),
+      energy_now  = tonumber(assert(read_first_line(sformat('%s/energy_now', battery_path)))),
+      energy_full = tonumber(assert(read_first_line(sformat('%s/energy_full', battery_path)))),
     }
-
-    if rate_microw ~= 0 then
-      local battery_time_hours = capacity_microwh / rate_microw
-      states[i].time = floor(battery_time_hours * 60)
-    end
   end
 
   return states
@@ -105,14 +95,13 @@ function raw_data_backend:new(options) -- {{{
   assert(options.batteries)
   for i = 1, #options.batteries do
     local battery = options.batteries[i]
-    assert(type(battery.charge) == 'number', type(battery.charge))
+    assert(type(battery.power_now) == 'number', type(battery.charge))
+    assert(type(battery.energy_now) == 'number', type(battery.charge))
+    assert(type(battery.energy_full) == 'number', type(battery.charge))
     assert(BATTERY_STATES[slower(battery.status)], battery.status)
-    if battery.time then
-      assert(type(battery.time) == 'number', type(battery.time))
-    end
 
     for k in pairs(battery) do
-      assert(k == 'charge' or k == 'status' or k == 'time', k)
+      assert(k == 'power_now' or k == 'energy_now' or k == 'energy_full' or k == 'status', k)
     end
   end
 

@@ -14,6 +14,27 @@ local has_battery = backend:detect()
 
 local log = print
 
+local acpi_events = require('gears.object')()
+do
+  local spawn_err = spawn.with_line_callback('acpi_listen', {
+    stdout = function(line)
+      if string.sub(line, 1, #'battery') == 'battery' then
+        acpi_events:emit_signal 'battery'
+      end
+    end,
+
+    exit = function(reason, exit_code)
+      log(string.format('acpi_listen exited due to %s (exit code = %d)', reason, exit_code))
+    end,
+  })
+
+  if type(spawn_err) == 'string' then
+    log('failed to spawn acpi_listen: ' .. spawn_err)
+  end
+end
+
+local widgets = setmetatable({}, {__mode = 'k'})
+
 local function make_widget()
   if not has_battery then
     return
@@ -26,19 +47,20 @@ local function make_widget()
 
   local reverse_color
   local prev_render
-  local blink_timer = timer {
-    timeout = 1,
-    callback = function()
-      local markup = prev_render:markup()
-      if reverse_color then
-        w:set_markup(sformat('<span background="red">%s</span>', markup))
-      else
-        w:set_markup(markup)
-      end
+  local function blink_callback()
+    local markup = prev_render:markup()
+    if reverse_color then
+      w:set_markup(sformat('<span background="red">%s</span>', markup))
+    else
+      w:set_markup(markup)
+    end
 
-      reverse_color = not reverse_color
-    end,
-  }
+    reverse_color = not reverse_color
+
+    return true
+  end
+  local blink_timer = timer.weak_start_new(1, blink_callback)
+  blink_timer:stop()
 
   local function refresh()
     local state = backend:state()
@@ -53,34 +75,22 @@ local function make_widget()
 
     w:set_markup(r:markup())
     prev_render = r
+
+    return true
   end
 
-  timer {
-    timeout   = 60,
-    autostart = true,
-    call_now  = true,
+  timer.weak_start_new(60, refresh)
+  refresh()
 
-    callback = refresh,
-  }
-
-  local spawn_err = spawn.with_line_callback('acpi_listen', {
-    stdout = function(line)
-      if string.sub(line, 1, #'battery') == 'battery' then
-        refresh()
-      end
-    end,
-
-    exit = function(reason, exit_code)
-      log(string.format('acpi_listen exited due to %s (exit code = %d)', reason, exit_code))
-    end,
-  })
-
-  if type(spawn_err) == 'string' then
-    log('failed to spawn acpi_listen: ' .. spawn_err)
-  end
+  acpi_events:weak_connect_signal('battery', refresh)
 
   w:buttons(awful.util.table.join(
     awful.button({}, 1, refresh)))
+
+  widgets[w] = {
+    refresh,
+    blink_callback,
+  }
 
   return w
 end

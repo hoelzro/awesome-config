@@ -11,6 +11,8 @@ assert(backend:detect())
 
 local log = print
 
+local widgets = setmetatable({}, {__mode = 'k'})
+
 local function make_widget()
   local w = wibox.widget {
     text = 'Temperature Info',
@@ -22,18 +24,16 @@ local function make_widget()
     local r = make_renderer()
     render(r, state)
     w:set_markup(r:markup())
+    return true
   end
 
-  timer {
-    timeout   = 5,
-    autostart = true,
-    call_now  = true,
-
-    callback = refresh,
-  }
+  timer.weak_start_new(5, refresh)
+  refresh()
 
   w:buttons(awful.util.table.join(
     awful.button({}, 1, refresh)))
+
+  widgets[w] = refresh
 
   return w
 end

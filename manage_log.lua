@@ -4,7 +4,6 @@ if not success then
 end
 
 local window_buffer      = {}
-local window_buffer_size = 0
 local window_buffer_max  = 100
 
 local function flush_window_buffer()
@@ -12,8 +11,7 @@ local function flush_window_buffer()
     print(json.encode(v))
   end
 
-  window_buffer      = {}
-  window_buffer_size = 0
+  window_buffer = {}
 end
 
 local function record(c)
@@ -26,12 +24,9 @@ local function record(c)
     instance = c.instance,
     role     = c.role,
   }
-  table.insert(window_buffer, t)
-  window_buffer_size = window_buffer_size + 1
-  if window_buffer_size > window_buffer_max then
-    for i = 1, window_buffer_size - window_buffer_max, 1 do
-      table.remove(window_buffer, 1)
-    end
+  window_buffer[#window_buffer+1] = t
+  while #window_buffer > window_buffer_max do
+    table.remove(window_buffer, 1)
   end
 end
 

@@ -258,7 +258,8 @@ globalkeys = awful.util.table.join(
     end),
 
     -- XXX I'll need to `require 'dashboard'` after I'm done iterating
-    key({ modkey }, 'BackSpace', function() dashboard.visible = true end, function() dashboard.visible = false end)
+    key({ modkey }, 'BackSpace', function() dashboard.visible = true end, function() dashboard.visible = false end),
+    key({ modkey, 'Control', 'Shift' }, 'f', require('manage_log').flush_window_buffer)
 )
 
 clientkeys = awful.util.table.join(

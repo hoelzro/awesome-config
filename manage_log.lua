@@ -15,8 +15,8 @@ local window_buffer      = {}
 local window_buffer_max  = 100
 
 local function flush_window_buffer()
-  for _, v in pairs(window_buffer) do
-    print(json.encode(v))
+  for i = 1, #window_buffer do
+    print(json.encode(window_buffer[i]))
   end
 
   window_buffer = {}

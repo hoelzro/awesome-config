@@ -1,4 +1,4 @@
-local json_modules = {'cjson', 'json'}
+local json_modules = {'cjson', 'json', 'dkjson'}
 local json
 
 for i = 1, #json_modules do

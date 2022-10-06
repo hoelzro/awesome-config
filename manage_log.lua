@@ -1,7 +1,15 @@
-local success, json = pcall(require, 'cjson')
-if not success then
-  json = require 'json'
+local json_modules = {'cjson', 'json'}
+local json
+
+for i = 1, #json_modules do
+  local success, mod = pcall(require, json_modules[i])
+  if success then
+    json = mod
+    break
+  end
 end
+
+assert(json, 'unable to load compatible JSON library (options are ' .. table.concat(json_modules, ', ') .. ')')
 
 local window_buffer      = {}
 local window_buffer_max  = 100

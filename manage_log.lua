@@ -11,15 +11,16 @@ end
 
 assert(json, 'unable to load compatible JSON library (options are ' .. table.concat(json_modules, ', ') .. ')')
 
-local window_buffer      = {}
-local window_buffer_max  = 100
+local window_buffer_max = 100
+
+local window_buffer = require('ring_buffer')(window_buffer_max)
 
 local function flush_window_buffer()
-  for i = 1, #window_buffer do
-    print(json.encode(window_buffer[i]))
+  for _, c in window_buffer:iterate() do
+    print(json.encode(c))
   end
 
-  window_buffer = {}
+  window_buffer:clear()
 end
 
 local function record(c)
@@ -32,10 +33,7 @@ local function record(c)
     instance = c.instance,
     role     = c.role,
   }
-  window_buffer[#window_buffer+1] = t
-  while #window_buffer > window_buffer_max do
-    table.remove(window_buffer, 1)
-  end
+  window_buffer:push(t)
 end
 
 return {

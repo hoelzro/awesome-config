@@ -1,6 +1,7 @@
-local awful = require 'awful'
-local wibox = require 'wibox'
-local timer = require 'gears.timer'
+local awful   = require 'awful'
+local naughty = require 'naughty'
+local wibox   = require 'wibox'
+local timer   = require 'gears.timer'
 
 local cqueues = require 'cqueues'
 local donut   = require 'donut'
@@ -24,6 +25,8 @@ local function make_widget()
     widget = wibox.widget.textbox,
   }
 
+  local previously_fetched_state
+
   local function refresh()
     local refresh_time = os.time()
     donut.run(function()
@@ -32,6 +35,7 @@ local function make_widget()
       if ok then
         local state = state_or_err
         state.last_refresh_time = refresh_time
+        previously_fetched_state = state
         local r = make_renderer()
         render_widget(r, state)
         w:set_markup(r:markup())
@@ -53,7 +57,30 @@ local function make_widget()
   w:buttons(awful.util.table.join(
     awful.button({}, 1, refresh)))
 
-  -- XXX set up hover widget
+  -- XXX use a popup instead?
+  local notification
+
+  w:connect_signal('mouse::enter', function()
+    if not previously_fetched_state then
+      return
+    end
+
+    local r = make_renderer()
+    render_popup(r, previously_fetched_state)
+    notification = naughty.notify {
+      title = 'Weather',
+      text  = r:markup(),
+
+      replaces_id = (notification and notification.box.visible) and notification.id or nil,
+    }
+  end)
+
+  w:connect_signal('mouse::leave', function()
+    if notification then
+      naughty.destroy(notification, naughty.notificationClosedReason.dismissedByCommand)
+      notification = nil
+    end
+  end)
 
   return w
 end

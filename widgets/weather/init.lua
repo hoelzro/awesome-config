@@ -49,13 +49,20 @@ local function make_widget()
     widget = wibox.widget.textbox,
   }
 
+  local request_in_flight
   local previously_fetched_state
 
   local function refresh()
+    if request_in_flight then
+      return
+    end
+
     local refresh_time = os.time()
+    request_in_flight = refresh_time
     donut.run(function()
       return assert(backend:state())
     end, function(ok, state_or_err)
+      request_in_flight = nil
       if ok then
         local state = state_or_err
         state.last_refresh_time = refresh_time

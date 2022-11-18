@@ -96,7 +96,7 @@ local function make_widget()
 
   w:connect_signal('mouse::enter', function()
     local r = make_renderer()
-    render_popup(r, previous_refresh_time, previously_fetched_state, previous_fetch_error)
+    render_popup(r, previous_refresh_time, request_in_flight, previously_fetched_state, previous_fetch_error)
     notification = naughty.notify {
       title = 'Weather',
       text  = r:markup(),

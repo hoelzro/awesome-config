@@ -19,6 +19,30 @@ assert(backend:detect(), 'weather widget configuration required')
 
 local log = print
 
+local function with_retries(inner, num_retries)
+  local retryer = {}
+  function retryer:state()
+    local final_error
+
+    for i = 1, num_retries do
+      local state, err = inner:state()
+      if state then
+        return state
+      end
+
+      final_error = err
+
+      local backoff = 5 * 2 ^ (i - 1)
+      cqueues.sleep(backoff)
+    end
+
+    return nil, final_error
+  end
+  return setmetatable(retryer, {__index = inner})
+end
+
+backend = with_retries(backend, 5)
+
 local function make_widget()
   local w = wibox.widget {
     text = 'Weather Info',

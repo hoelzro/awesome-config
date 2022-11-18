@@ -50,7 +50,9 @@ local function make_widget()
   }
 
   local request_in_flight
+  local previous_refresh_time
   local previously_fetched_state
+  local previous_fetch_error
 
   local function refresh()
     if request_in_flight then
@@ -62,17 +64,18 @@ local function make_widget()
     donut.run(function()
       return assert(backend:state())
     end, function(ok, state_or_err)
-      request_in_flight = nil
+      previous_refresh_time = refresh_time
+      request_in_flight     = nil
+
       if ok then
-        local state = state_or_err
-        state.last_refresh_time = refresh_time
-        previously_fetched_state = state
-        local r = make_renderer()
-        render_widget(r, state)
-        w:set_markup(r:markup())
+        previously_fetched_state, previous_fetch_error = state_or_err, nil
       else
-        -- XXX test error scenario, and render or show error on hover or whatever
+        previously_fetched_state, previous_fetch_error = nil, state_or_err
       end
+
+      local r = make_renderer()
+      render_widget(r, previously_fetched_state, previous_fetch_error)
+      w:set_markup(r:markup())
     end)
   end
 
@@ -92,12 +95,8 @@ local function make_widget()
   local notification
 
   w:connect_signal('mouse::enter', function()
-    if not previously_fetched_state then
-      return
-    end
-
     local r = make_renderer()
-    render_popup(r, previously_fetched_state)
+    render_popup(r, previous_refresh_time, previously_fetched_state, previous_fetch_error)
     notification = naughty.notify {
       title = 'Weather',
       text  = r:markup(),

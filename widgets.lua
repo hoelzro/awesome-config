@@ -13,7 +13,7 @@ local battery = require 'widgets.battery'
 local music_widget = require 'obvious.music'
 local temp_widget = require 'widgets.temperature'
 
-local weather = require 'obvious.weather'
+local weather = require 'widgets.weather'
 
 local audio = require 'audio'
 local remorseful = require 'remorseful'

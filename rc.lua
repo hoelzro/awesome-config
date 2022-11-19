@@ -99,3 +99,9 @@ if type(posix) == 'table' then
 end
 
 start_time = os.time()
+screen_count = 0
+
+local awful = require 'awful'
+awful.screen.connect_for_each_screen(function(s)
+  screen_count = screen_count + 1
+end)

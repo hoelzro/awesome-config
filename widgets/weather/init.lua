@@ -43,6 +43,8 @@ end
 
 backend = with_retries(backend, 5)
 
+local widgets = setmetatable({}, {__mode = 'k'})
+
 local function make_widget()
   local w = wibox.widget {
     text = 'Weather Info',
@@ -79,20 +81,14 @@ local function make_widget()
     end)
   end
 
-  -- XXX properly handle GC stuff
-  timer {
-    timeout = 15 * 60,
-    autostart = true,
-    call_now  = true,
-
-    callback = refresh,
-  }
+  timer.weak_start_new(15 * 60, refresh)
+  refresh()
 
   w:buttons(awful.util.table.join(
     awful.button({}, 1, refresh)))
 
   -- XXX use a popup instead?
-  local notification
+  local notification -- XXX having this dangling could be bad across restarts?
 
   w:connect_signal('mouse::enter', function()
     local r = make_renderer()
@@ -111,6 +107,8 @@ local function make_widget()
       notification = nil
     end
   end)
+
+  widgets[w] = refresh
 
   return w
 end

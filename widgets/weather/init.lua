@@ -79,6 +79,8 @@ local function make_widget()
       render_widget(r, previously_fetched_state, previous_fetch_error)
       w:set_markup(r:markup())
     end)
+
+    return true
   end
 
   timer.weak_start_new(15 * 60, refresh)

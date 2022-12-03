@@ -3,88 +3,94 @@ local rules     = require 'awful.rules'
 local beautiful = require 'beautiful'
 
 local manage_log = require 'manage_log'
+local named_rules = require 'named_rules'
 
-rules.rules = {
-    { rule = { },
-      callback = function(c)
-        manage_log.record(c)
-      end,
-      properties = { border_width = beautiful.border_width,
-                     border_color = beautiful.border_normal,
-                     focus = true,
-                     keys = clientkeys,
-                     buttons = clientbuttons,
-                     floating = false } },
-    { rule = { class = "Chromium" },
-      properties = { keys = chromiumkeys } },
-    { rule = { class = "Slack" },
-      properties = { buttons = slackbuttons, keys = slackkeys } },
-    { rule = { instance = 'keepassx' },
-      properties = { keys = keepasskeys } },
+-- XXX I bet I could leverage the named rules thing to enable smarter reloading of rules?
+local rules = named_rules()
 
-    { rule = { class = "Claws-mail", role = 'message_search' },
-      properties = { floating = true } },
-
-    { rule       = { class = 'Gajim', role = 'roster' },
-      properties = { },
-      callback   = awful.client.setmaster },
-
-    { rule       = { class = 'Steam' },
-      properties = { floating = true } },
-
-    { rule       = { type = 'splash' },
-      properties = { floating = true } },
-
-    {
-        rule = {
-          class = 'QtQmlViewer',
-        },
-        properties = {
-          floating = true,
-        },
-    },
-
-    {
-        rule = {
-          class = 'SshAskpass',
-        },
-        properties = {
-          floating = true,
-        },
-    },
-
-    {
-        rule = {
-          class = 'Gajim',
-          name = 'XML Console',
-        },
-        properties = {
-          floating = true,
-        },
-    },
-
-    {
-        rule = {
-            type = 'dialog',
-        },
-        properties = {
-          floating = true,
-        },
-    },
-
-    { rule       = {},
-      properties = {
-        size_hints_honor = false,
-      },
-      callback   = function(client)
-        if client.transient_for then
-          awful.client.floating.set(client, true)
-          client:move_to_screen(client.transient_for.screen)
-          client:move_to_tag(client.transient_for.first_tag)
-        end
-      end,
-    },
+rules.general = {
+  rule       = {},
+  callback   = manage_log.record,
+  properties = {
+    border_width = beautiful.border_width,
+    border_color = beautiful.border_normal,
+    focus        = true,
+    keys         = clientkeys,
+    buttons      = clientbuttons,
+    floating     = false,
+  },
 }
+
+rules.chromium = {
+  rule       = { class = 'Chromium' },
+  properties = { keys = chromiumkeys },
+}
+
+rules.slack = {
+  rule       = { class = 'Slack' },
+  properties = { buttons = slackbuttons, keys = slackkeys },
+}
+
+rules.keepass = {
+  rule       = { instance = 'keepassx' },
+  properties = { keys = keepasskeys },
+}
+
+rules.steam = {
+  rule       = { class = 'Steam' },
+  properties = { floating = true },
+}
+
+rules.splash = {
+  rule       = { type = 'splash' },
+  properties = { floating = true },
+}
+
+rules.dialog = {
+  rule       = { type = 'dialog' },
+  properties = { floating = true },
+}
+
+rules.sshaskpass = {
+  rule = {
+    class = 'SshAskpass',
+  },
+  properties = {
+    floating = true,
+  },
+}
+
+rules.transient_for = {
+  rule       = {},
+  properties = {
+    size_hints_honor = false,
+  },
+  callback = function(client)
+    if client.transient_for then
+      awful.client.floating.set(client, true)
+      client:move_to_screen(client.transient_for.screen)
+      client:move_to_tag(client.transient_for.first_tag)
+    end
+  end,
+}
+
+local rule_metadata
+-- XXX this sucks
+require('awful.rules').rules, rule_metadata = rules:build()
+
+rules = require 'awful.rules' -- XXX this sucks - remove this
+local log = print
+
+-- XXX "lawg" for original client properties?
+log 'here'
+rules.add_rule_source('my-clientrules', function(c)
+  for i = 1, #rules.rules do
+    local rule = rules.rules[i]
+    local rule_matches = rules.matches(c, rule)
+    log(string.format('client = %s - checking rule #%d (%s) - %s', tostring(c), i, (rule_metadata[rule] or {name='<unknown>'}).name, tostring(rule_matches)))
+  end
+end, {}, {'awful.rules'})
+log 'there'
 
 client.connect_signal("manage", function (c)
     c:connect_signal("mouse::enter", function(c)

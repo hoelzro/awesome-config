@@ -14,7 +14,7 @@ local render_widget = render.widget
 local render_popup  = render.popup
 
 local config = require 'widgets.config'
-local backend = backends.darksky:new(config.weather)
+local backend = backends.weather_gov:new(assert(config.weather, 'weather widget configuration required'))
 assert(backend:detect(), 'weather widget configuration required')
 
 local log = print

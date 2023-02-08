@@ -7,7 +7,7 @@ local MAX_VOLUME = 65536
 
 local audio = {}
 
-local volume_icon_base = '/usr/share/icons/gnome/24x24/status/'
+local volume_icon_base = '/usr/share/icons/Obsidian-Light/status/32/'
 
 local do_volume_notification
 do
@@ -39,7 +39,7 @@ local function on_volume_change(_, _, path, _, _, params)
   do_volume_notification {
     title   = 'Volume Changed',
     text    = string.format('%.0f%%', 100 * volume / MAX_VOLUME),
-    icon    = 'stock_volume-max.png',
+    icon    = 'audio-volume-high.png',
     opacity = volume / MAX_VOLUME,
   }
 end
@@ -50,13 +50,13 @@ local function on_mute_change(_, _, _, _, _, params)
     do_volume_notification {
       title = 'Volume Changed',
       text  = 'Muted',
-      icon  = 'stock_volume-mute.png'
+      icon  = 'audio-volume-muted-blocking-panel.png'
     }
   else
     do_volume_notification {
       title = 'Volume Changed',
       text  = 'Unmuted',
-      icon  = 'stock_volume-max.png'
+    icon    = 'audio-volume-high.png',
     }
   end
 end

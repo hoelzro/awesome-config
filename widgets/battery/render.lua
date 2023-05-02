@@ -39,7 +39,14 @@ local function render(renderer, batteries)
 
   local total_eta -- minutes
   if total_power_now ~= 0 then
-    local battery_time_hours = total_energy_now / total_power_now
+    local battery_time_hours
+
+    if all_status == 'charging' then
+      battery_time_hours = (total_energy_full - total_energy_now) / total_power_now
+    else
+      battery_time_hours = total_energy_now / total_power_now
+    end
+
     total_eta = floor(battery_time_hours * 60)
   end
 

@@ -1,6 +1,8 @@
 -- Tiny Tiny RSS
 -- Irssi
 
+local unpack = unpack or table.unpack
+
 local awful     = require 'awful'
 local beautiful = require 'beautiful'
 local wibox     = require 'wibox'
@@ -10,6 +12,7 @@ local calendar  = require 'awful.widget.calendar_popup'
 local dpi = require('beautiful').xresources.apply_dpi
 
 local battery = require 'widgets.battery'
+local config = require 'widgets.config'
 local music_widget = require 'obvious.music'
 local temp_widget = require 'widgets.temperature'
 
@@ -274,9 +277,26 @@ awful.screen.connect_for_each_screen(function(s)
     right:add(weather())
     right:add(separator())
     right:add(textclock('%a %b %d', 60))
-    right:add(textclock(' <b>UTC</b>: %H:%M', 60, 'Z'))
-    right:add(textclock(' <b>PST</b>: %H:%M', 60, 'America/Los_Angeles'))
-    right:add(attached(month_calendar, textclock(' <b>CST</b>: %H:%M:%S', 1, 'America/Chicago')))
+
+    local timezones = config.timezones or {}
+    local primary_timezone
+
+    for i = 1, #timezones do
+      local name, timezone = unpack(timezones[i])
+      if name == timezones.primary then
+        primary_timezone = timezones[i]
+        goto continue
+      end
+
+      right:add(textclock(' <b>' .. name .. '</b>: %H:%M', 60, timezone))
+
+      ::continue::
+    end
+
+    if primary_timezone then
+      local name, timezone = unpack(primary_timezone)
+      right:add(attached(month_calendar, textclock(' <b>' .. name .. '</b>: %H:%M:%S', 60, timezone)))
+    end
 
     right:add(separator())
     right:add(mylayoutbox[s])

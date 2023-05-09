@@ -295,7 +295,7 @@ awful.screen.connect_for_each_screen(function(s)
 
     if primary_timezone then
       local name, timezone = unpack(primary_timezone)
-      right:add(attached(month_calendar, textclock(' <b>' .. name .. '</b>: %H:%M:%S', 60, timezone)))
+      right:add(attached(month_calendar, textclock(' <b>' .. name .. '</b>: %H:%M:%S', 1, timezone)))
     end
 
     right:add(separator())

@@ -140,8 +140,11 @@ function weather_gov_backend:state()
   -- XXX hardcoded TZ offset
   local sunrise_time, sunset_time = calculate_sunrise_sunset(res.geometry.coordinates[2], res.geometry.coordinates[1], -6)
 
-  local icon_uri = uri_pattern:match(res.properties.icon)
-  local icon = string.match(icon_uri.path, '.*/(.*)')
+  local icon = 'unknown'
+  if res.properties.icon then
+    local icon_uri = uri_pattern:match(res.properties.icon)
+    icon = string.match(icon_uri.path, '.*/(.*)')
+  end
 
   return {
     sunrise_time        = sunrise_time,

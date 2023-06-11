@@ -36,11 +36,11 @@ local function render_popup(r, previous_refresh_time, request_in_flight, state, 
   end
 
   if state then
-    r:printf('Sunrise:           %s', os.date('%T', state.sunrise_time))
-    r:print '\n'
-    r:printf('Sunset:            %s', os.date('%T', state.sunset_time))
-    r:print '\n'
-    r:printf('Humidity:          %s%%', state.humidity_percent)
+    r:table {
+      {'Sunrise:', os.date('%T', state.sunrise_time)},
+      {'Sunset:', os.date('%T', state.sunset_time)},
+      {'Humidity:', tostring(state.humidity_percent) .. '%'},
+    }
   else
     r:printf('Error:             %s', err)
   end

@@ -146,10 +146,14 @@ function weather_gov_backend:state()
     icon = string.match(icon_uri.path, '.*/(.*)')
   end
 
+  local humidity = res.properties.relativeHumidity.value
+  assert(res.properties.relativeHumidity.unitCode == 'wmoUnit:percent')
+
   return {
     sunrise_time        = sunrise_time,
     sunset_time         = sunset_time,
     temperature_celsius = temperature_celsius,
+    humidity_percent    = humidity,
     icon                = WEATHER_GOV_ICON_MAP[icon] or 'clear-day',
   }
 end

@@ -289,4 +289,7 @@ local function dbus_proxy(dbus, bus_name, object_path)
   return proxy
 end
 
-return dbus_proxy
+return {
+  dbus_proxy     = dbus_proxy,
+  decode_variant = decode_variant,
+}

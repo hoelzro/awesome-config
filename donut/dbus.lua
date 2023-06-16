@@ -5,7 +5,7 @@ local lgi = require 'lgi'
 local gio = lgi.require 'Gio'
 local glib = lgi.require 'GLib'
 
-local dbus_proxy = require 'donut.dbus_proxy'
+local dbus_proxy = require('donut.dbus_proxy').dbus_proxy
 
 local module = {}
 

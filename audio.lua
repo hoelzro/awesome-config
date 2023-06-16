@@ -1,4 +1,5 @@
 local awful   = require 'awful'
+local object  = require 'gears.object'
 local cqueues = require 'cqueues'
 local donut   = require 'donut'
 local naughty = require 'naughty'
@@ -27,6 +28,7 @@ do
 end
 
 local latest_proxy
+local mpris_signal_object = object()
 
 local function on_volume_change(_, _, path, _, _, params)
   -- my microphone will broadcast weird volume change events, so I'm going to
@@ -126,8 +128,18 @@ do
 
         -- XXX these are always run on the main coroutine, it seems - should I make
         --     that not the case in donut.dbus? would that affect usage of naughty above?
-        callback = function(_, sender)
+        callback = function(_, sender, _, _, _, params)
           donut.run(function()
+            local changes = donut.decode_variant(params:get_child_value(1))
+
+            if changes.PlaybackStatus then
+              mpris_signal_object:emit_signal('playbackstatus', string.lower(changes.PlaybackStatus))
+            end
+
+            if changes.Metadata then
+              mpris_signal_object:emit_signal('trackchange', changes.Metadata)
+            end
+
             -- XXX detecting the latest_proxy getting off the bus would be nice!
             latest_proxy = session_bus:proxy(sender, '/org/mpris/MediaPlayer2')
           end, function() end)
@@ -169,6 +181,10 @@ end
 
 function audio.stop()
   run_on_latest 'Stop'
+end
+
+function audio.weak_connect_signal(...)
+  return mpris_signal_object:weak_connect_signal(...)
 end
 
 -- XXX get rid of this when you can

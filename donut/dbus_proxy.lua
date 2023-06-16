@@ -7,13 +7,19 @@ local glib = lgi.require 'GLib'
 local parse_xml = require('lxp.lom').parse
 
 local PRIMITIVE_VARIANT_TYPES = {
-  b = true,
-  o = true,
-  s = true,
-  u = true,
+  b = true, -- boolean
+  d = true, -- double
+  i = true, -- 32-bit signed int
+  o = true, -- object path
+  s = true, -- string
+  t = true, -- 64-bit unsigned int
+  u = true, -- 32-bit unsigned int
 }
 
--- XXX only call me from dbus_call
+-- XXX only call me from dbus_call (why? I'm guessing due to the `return true` bit below and the
+--     auto-unpacking behavior from tuples, and/or only covering the subset of variants returned by
+--     making D-Bus calls?)
+-- XXX either way, I'm going to disregard this and hope nothing breaks 😅
 local function decode_variant(v)
   if not glib.Variant:is_type_of(v) then
     return v
@@ -36,14 +42,28 @@ local function decode_variant(v)
       return table.unpack(contents, 1, n)
     end
   elseif first == 'a' then -- array
-    local contents = {}
-    local n = v:n_children()
+    if string.sub(vtype, 2, 2) == '{' then
+      local contents = {}
+      local n = v:n_children()
 
-    for i = 0, n - 1 do
-      contents[i + 1] = decode_variant(v:get_child_value(i))
+      for i = 0, n - 1 do
+        local entry = v:get_child_value(i)
+        local name = decode_variant(entry:get_child_value(0))
+        local value = decode_variant(entry:get_child_value(1))
+        contents[name] = value
+      end
+
+      return contents
+    else
+      local contents = {}
+      local n = v:n_children()
+
+      for i = 0, n - 1 do
+        contents[i + 1] = decode_variant(v:get_child_value(i))
+      end
+
+      return contents
     end
-
-    return contents
   elseif vtype == 'v' then
     return decode_variant(v.value)
   elseif PRIMITIVE_VARIANT_TYPES[vtype] then

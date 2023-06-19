@@ -13,12 +13,11 @@ local dpi = require('beautiful').xresources.apply_dpi
 
 local battery = require 'widgets.battery'
 local config = require 'widgets.config'
-local music_widget = require 'obvious.music'
+local music_widget = require 'widgets.music'
 local temp_widget = require 'widgets.temperature'
 
 local weather = require 'widgets.weather'
 
-local audio = require 'audio'
 local remorseful = require 'remorseful'
 local safe_restart = require 'safe-restart'
 
@@ -35,17 +34,6 @@ end
 
 awesome.register_xproperty('_NET_WM_ICON_NAME', 'string')
 awesome.register_xproperty('WM_ICON_NAME', 'string')
-
-music_widget.set_format  '<b>$icon</b> <marquee>$artist - $title</marquee>'
-music_widget.set_backend 'mpris'
-music_widget.set_length(50)
-music_widget.set_marquee(true)
-
-music_widget():buttons(awful.util.table.join(
-  awful.button({ }, 1, function() audio.toggle() end),
-  awful.button({ }, 4, function() audio.next() end),
-  awful.button({ }, 5, function() audio.previous() end)
-))
 
 local myawesomemenu = {
    { "manual", terminal .. " -e man awesome" },

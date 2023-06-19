@@ -30,7 +30,7 @@ local function make_widget()
     song_widget,
 
     layout      = wibox.container.scroll.horizontal,
-    max_size    = 75,
+    max_size    = 300, -- XXX use fontmetrics to calculate size?
     extra_space = 3, -- XXX use fontmetrics to calculate spacing?
     fps         = 1,
   }

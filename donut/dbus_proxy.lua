@@ -14,6 +14,7 @@ local PRIMITIVE_VARIANT_TYPES = {
   s = true, -- string
   t = true, -- 64-bit unsigned int
   u = true, -- 32-bit unsigned int
+  x = true, -- 64-bit int
 }
 
 -- XXX only call me from dbus_call (why? I'm guessing due to the `return true` bit below and the

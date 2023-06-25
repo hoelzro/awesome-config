@@ -133,11 +133,15 @@ do
             local changes = donut.decode_variant(params:get_child_value(1))
 
             if changes.PlaybackStatus then
-              mpris_signal_object:emit_signal('playbackstatus', string.lower(changes.PlaybackStatus))
+              mpris_signal_object:emit_signal('playbackstatus', string.lower(changes.PlaybackStatus), {
+                sender = sender,
+              })
             end
 
             if changes.Metadata then
-              mpris_signal_object:emit_signal('trackchange', changes.Metadata)
+              mpris_signal_object:emit_signal('trackchange', changes.Metadata, {
+                sender = sender,
+              })
             end
 
             -- XXX detecting the latest_proxy getting off the bus would be nice!

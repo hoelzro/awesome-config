@@ -35,7 +35,7 @@ function backends.mpris:weak_connect_signal(signal, callback)
     if not trackchange_callback_wrappers[callback] then
       local orig_callback = callback
 
-      function callback(obj, metadata)
+      function callback(obj, metadata, ...)
         local trackinfo = {}
 
         if metadata['xesam:album'] then
@@ -53,7 +53,7 @@ function backends.mpris:weak_connect_signal(signal, callback)
           trackinfo.title = metadata['xesam:title']
         end
 
-        return orig_callback(obj, trackinfo)
+        return orig_callback(obj, trackinfo, ...)
       end
 
       trackchange_callback_wrappers[orig_callback] = callback

@@ -44,23 +44,59 @@ local function make_widget()
     layout = wibox.layout.fixed.horizontal,
   }
 
-  local playback_state = 'playing'
-  local current_track = {}
+  local player_states = {}
 
   local function refresh()
-    icon_widget:set_markup('<b>' .. ICONS[playback_state] .. '</b>')
-    song_widget:set_text(string.format('%s - %s',
-      current_track.artist or '',
-      current_track.title or ''))
+    local current_playing
+    local latest_paused
+
+    for _, player in pairs(player_states) do
+      if player.playback_state == 'playing' then
+        current_playing = player
+      elseif player.playback_state == 'paused' and (not latest_paused or latest_paused.last_update < player.last_update) then
+        latest_paused = player
+      end
+    end
+
+    local player = current_playing or latest_paused
+
+    if player then
+      icon_widget:set_markup('<b>' .. ICONS[player.playback_state] .. '</b>')
+      if player.current_track.artist ~= '' then
+        song_widget:set_text(string.format('%s - %s',
+          player.current_track.artist or '',
+          player.current_track.title or ''))
+      else
+        song_widget:set_text(player.current_track.title)
+      end
+    else
+      icon_widget:set_markup('<b>' .. ICONS.stopped .. '</b>')
+      song_widget:set_text 'Music Stopped'
+    end
   end
 
-  local function handle_trackchange(_, trackinfo)
-    current_track = trackinfo
+  local function handle_trackchange(_, trackinfo, signal_metadata)
+    local sender = signal_metadata.sender
+    player_states[sender] = player_states[sender] or {
+      playback_state = 'stopped',
+      current_track  = {},
+    }
+
+    player_states[sender].last_update = os.time()
+    player_states[sender].current_track = trackinfo
+
     refresh()
   end
 
-  local function handle_playbackstatus(_, status)
-    playback_state = status
+  local function handle_playbackstatus(_, status, signal_metadata)
+    local sender = signal_metadata.sender
+    player_states[sender] = player_states[sender] or {
+      playback_state = 'stopped',
+      current_track  = {},
+    }
+
+    player_states[sender].last_update = os.time()
+    player_states[sender].playback_state = status
     refresh()
   end
 

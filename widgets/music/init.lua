@@ -51,7 +51,7 @@ local function make_widget()
     local latest_paused
 
     for _, player in pairs(player_states) do
-      if player.playback_state == 'playing' then
+      if player.playback_state == 'playing' and (not current_playing or current_playing.last_update < player.last_update) then
         current_playing = player
       elseif player.playback_state == 'paused' and (not latest_paused or latest_paused.last_update < player.last_update) then
         latest_paused = player

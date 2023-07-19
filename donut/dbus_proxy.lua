@@ -1,4 +1,3 @@
-local cqueues = require 'cqueues'
 local promise = require 'cqueues.promise'
 
 local lgi = require 'lgi'
@@ -253,27 +252,6 @@ end
 -- collected every time
 local proxy_cache = setmetatable({}, {__mode = 'k'})
 
--- in case of error values in proxy_cache[bus], we wrap the underlying error value in a table with
--- the error_wrapper_mt metatable.  We don't want to store the actual error in the weakly-valued
--- proxy_cache[bus] table, since the error may be (and often is) a string and the behavior of
--- strings as weak referents can be… weird.  The use of the metatable merely serves as a way to
--- distinguish error wrappers from other possible values in the cache.
---
--- this *does* have the consequence that cached error values will get collected upon GC, but since
--- callers probably won't hang on to error values anyway, and we may want to retry creating a proxy
--- object for a given bus name in the future, that's ok
-local error_wrapper_mt = {}
-
-local function safetostring(v)
-  local ok, s_or_err = pcall(tostring, v)
-  if ok then
-    return s_or_err
-  else
-    -- (hopefully not naïvely) assume that any error tostrings safely
-    return '<tostring error: ' .. tostring(s_or_err) .. '>'
-  end
-end
-
 local function dbus_proxy(dbus, bus_name, object_path)
   local this_bus_cache = proxy_cache[dbus]
   if not this_bus_cache then
@@ -285,76 +263,30 @@ local function dbus_proxy(dbus, bus_name, object_path)
 
   local cache_key = bus_name .. '\x1f' .. object_path
 
-  do
-    local cached_proxy = this_bus_cache[cache_key]
-    if cached_proxy then
-      if not promise.type(cached_proxy) then
-        if getmetatable(cached_proxy) == error_wrapper_mt then
-          -- in this case cached_proxy is actually an error wrapper
-          return nil, cached_proxy.err
-        else
-          return cached_proxy
-        end
-      end
-
-      local ok, value_or_err = pcall(cached_proxy.get, cached_proxy)
-
-      if ok then
-        return value_or_err
-      else
-        return nil, value_or_err
-      end
-    end
+  local cached_proxy = this_bus_cache[cache_key]
+  if cached_proxy then
+    return cached_proxy
   end
 
-  local p = promise.new()
-  this_bus_cache[cache_key] = p
-
-  local TIMEOUT_SECONDS = 5
-  local RETRY_INTERVAL_SECONDS = 0.1
-
-  local interfaces
-  for elapsed = 0, TIMEOUT_SECONDS, RETRY_INTERVAL_SECONDS do
-    local xml, err = dbus_call {
-      dbus           = dbus,
-      bus_name       = bus_name,
-      object_path    = object_path,
-      interface_name = 'org.freedesktop.DBus.Introspectable',
-      method_name    = 'Introspect',
-      parameters     = {},
-      reply_type     = '(s)',
-    }
-    if not xml then
-      this_bus_cache[cache_key] = setmetatable({err = err}, error_wrapper_mt)
-      p:set(false, err)
-      return nil, err
-    end
-    local lom, err = parse_xml(xml)
-    if not lom then
-      this_bus_cache[cache_key] = setmetatable({err = err}, error_wrapper_mt)
-      p:set(false, err)
-      return nil, err
-    end
-
-    --[[local]] interfaces = gather_interfaces(lom)
-
-    if #interfaces > 0 then
-      break
-    end
-
-    cqueues.sleep(RETRY_INTERVAL_SECONDS)
-  end
-
-  if not interfaces or #interfaces == 0 then
-    local err = string.format('unable to introspect %s after %d attempts', bus_name, math.floor(TIMEOUT_SECONDS / RETRY_INTERVAL_SECONDS))
-    this_bus_cache[cache_key] = setmetatable({err = err}, error_wrapper_mt)
-    p:set(false, err)
+  local xml, err = dbus_call {
+    dbus           = dbus,
+    bus_name       = bus_name,
+    object_path    = object_path,
+    interface_name = 'org.freedesktop.DBus.Introspectable',
+    method_name    = 'Introspect',
+    parameters     = {},
+    reply_type     = '(s)',
+  }
+  if not xml then
     return nil, err
   end
-
+  local lom, err = parse_xml(xml)
+  if not lom then
+    return nil, err
+  end
+  local interfaces = gather_interfaces(lom)
   local proxy = generate_methods(dbus, bus_name, object_path, interfaces)
   this_bus_cache[cache_key] = proxy
-  p:set(true, proxy)
   return proxy
 end
 

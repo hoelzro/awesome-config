@@ -145,11 +145,7 @@ do
             end
 
             -- XXX detecting the latest_proxy getting off the bus would be nice!
-            local err
-            latest_proxy, err = session_bus:proxy(sender, '/org/mpris/MediaPlayer2')
-            if not latest_proxy then
-              print(string.format('Unable to create proxy for MPRIS service: %s', tostring(err)))
-            end
+            latest_proxy = session_bus:proxy(sender, '/org/mpris/MediaPlayer2')
           end, function() end)
         end,
       }

@@ -252,7 +252,9 @@ end
 -- collected every time
 local proxy_cache = setmetatable({}, {__mode = 'k'})
 
-local function dbus_proxy(dbus, bus_name, object_path)
+local function dbus_proxy(dbus, bus_name, object_path, options)
+  options = options or {}
+
   local this_bus_cache = proxy_cache[dbus]
   if not this_bus_cache then
     -- values need to be weak, since proxy_cache has strong values but we don't want
@@ -261,6 +263,7 @@ local function dbus_proxy(dbus, bus_name, object_path)
     proxy_cache[dbus] = this_bus_cache
   end
 
+  -- XXX cache_key will have to factor in options, but for now: ¯\_(ツ)_/¯
   local cache_key = bus_name .. '\x1f' .. object_path
 
   local cached_proxy = this_bus_cache[cache_key]
@@ -268,23 +271,27 @@ local function dbus_proxy(dbus, bus_name, object_path)
     return cached_proxy
   end
 
-  local xml, err = dbus_call {
-    dbus           = dbus,
-    bus_name       = bus_name,
-    object_path    = object_path,
-    interface_name = 'org.freedesktop.DBus.Introspectable',
-    method_name    = 'Introspect',
-    parameters     = {},
-    reply_type     = '(s)',
-  }
-  if not xml then
-    return nil, err
+  local interfaces = options.interfaces
+  if not interfaces then
+    local xml, err = dbus_call {
+      dbus           = dbus,
+      bus_name       = bus_name,
+      object_path    = object_path,
+      interface_name = 'org.freedesktop.DBus.Introspectable',
+      method_name    = 'Introspect',
+      parameters     = {},
+      reply_type     = '(s)',
+    }
+    if not xml then
+      return nil, err
+    end
+    local lom, err = parse_xml(xml)
+    if not lom then
+      return nil, err
+    end
+    interfaces = gather_interfaces(lom)
   end
-  local lom, err = parse_xml(xml)
-  if not lom then
-    return nil, err
-  end
-  local interfaces = gather_interfaces(lom)
+
   local proxy = generate_methods(dbus, bus_name, object_path, interfaces)
   this_bus_cache[cache_key] = proxy
   return proxy

@@ -14,8 +14,8 @@ local function dbus_wrapper(dbus)
 
   function mt:__index(k)
     if k == 'proxy' then
-      return function(_, bus_name, object_path)
-        return dbus_proxy(dbus, bus_name, object_path)
+      return function(_, bus_name, object_path, options)
+        return dbus_proxy(dbus, bus_name, object_path, options)
       end
     elseif k == 'subscribe' then
       return function(_, params)

@@ -145,7 +145,36 @@ do
             end
 
             -- XXX detecting the latest_proxy getting off the bus would be nice!
-            latest_proxy = session_bus:proxy(sender, '/org/mpris/MediaPlayer2')
+            latest_proxy = session_bus:proxy(sender, '/org/mpris/MediaPlayer2', {
+              -- XXX different API for this?
+              interfaces = {
+                {
+                  name = 'org.mpris.MediaPlayer2.Player',
+                  methods = {
+                    {
+                      name          = 'Next',
+                      parameters    = {},
+                      return_values = {},
+                    },
+                    {
+                      name          = 'Previous',
+                      parameters    = {},
+                      return_values = {},
+                    },
+                    {
+                      name          = 'PlayPause',
+                      parameters    = {},
+                      return_values = {},
+                    },
+                    {
+                      name          = 'Stop',
+                      parameters    = {},
+                      return_values = {},
+                    },
+                  },
+                },
+              },
+            })
           end, function() end)
         end,
       }

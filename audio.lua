@@ -191,7 +191,7 @@ do
 
         callback = function(_, name, old_owner, new_owner)
           if name == old_owner and is_unique_bus_name(name) and new_owner == '' then
-            print(string.format('it seems to me that %s has gotten off the bus', name))
+            mpris_signal_object:emit_signal('gone', name)
           end
         end
       }

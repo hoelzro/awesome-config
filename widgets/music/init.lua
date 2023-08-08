@@ -100,6 +100,10 @@ local function make_widget()
     refresh()
   end
 
+  local function handle_gone(_, sender)
+    player_states[sender] = nil
+  end
+
   refresh()
 
   -- XXX delegate to caller?
@@ -110,10 +114,12 @@ local function make_widget()
 
   backend:weak_connect_signal('trackchange', handle_trackchange)
   backend:weak_connect_signal('playbackstatus', handle_playbackstatus)
+  backend:weak_connect_signal('gone', handle_gone)
 
   widgets[top_widget] = {
     handle_trackchange,
     handle_playbackstatus,
+    handle_gone,
   }
 
   return top_widget

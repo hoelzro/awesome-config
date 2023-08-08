@@ -30,14 +30,16 @@ end
 local latest_proxy
 local mpris_signal_object = object()
 
-local function on_volume_change(_, _, path, _, _, params)
+local function on_volume_change(dbus_meta, volumes)
+  local path = dbus_meta.object_path
+  local volume = volumes[1]
+
   -- my microphone will broadcast weird volume change events, so I'm going to
   -- just ignore those from any source
   if string.match(path, '^/org/pulseaudio/core1/source') then
     return
   end
 
-  local volume = params[1][1]
   do_volume_notification {
     title   = 'Volume Changed',
     text    = string.format('%.0f%%', 100 * volume / MAX_VOLUME),
@@ -46,8 +48,7 @@ local function on_volume_change(_, _, path, _, _, params)
   }
 end
 
-local function on_mute_change(_, _, _, _, _, params)
-  local is_muted = params[1]
+local function on_mute_change(_, is_muted)
   if is_muted then
     do_volume_notification {
       title = 'Volume Changed',
@@ -128,10 +129,10 @@ do
 
         -- XXX these are always run on the main coroutine, it seems - should I make
         --     that not the case in donut.dbus? would that affect usage of naughty above?
-        callback = function(_, sender, _, _, _, params)
-          donut.run(function()
-            local changes = donut.decode_variant(params:get_child_value(1))
+        callback = function(dbus_meta, changes)
+          local sender = dbus_meta.sender_name
 
+          donut.run(function()
             if changes.PlaybackStatus then
               mpris_signal_object:emit_signal('playbackstatus', string.lower(changes.PlaybackStatus), {
                 sender = sender,

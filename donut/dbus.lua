@@ -6,6 +6,7 @@ local gio = lgi.require 'Gio'
 local glib = lgi.require 'GLib'
 
 local dbus_proxy = require('donut.dbus_proxy').dbus_proxy
+local decode_variant = require('donut.dbus_proxy').decode_variant
 
 local module = {}
 
@@ -20,7 +21,22 @@ local function dbus_wrapper(dbus)
     elseif k == 'subscribe' then
       return function(_, params)
         local flags = params.flags or gio.DBusCallFlags.NONE
-        dbus:signal_subscribe(params.sender, params.interface, params.member, params.object_path, params.arg0, flags, params.callback)
+
+        -- XXX weak reference shenanigans?
+        local callback = params.callback
+        local function callback_wrapper(connection, sender_name, object_path, interface_name, signal_name, params)
+          local meta = {
+            connection     = connection,
+            sender_name    = sender_name,
+            object_path    = object_path,
+            interface_name = interface_name,
+            signal_name    = signal_name,
+          }
+
+          callback(meta, decode_variant(params))
+        end
+
+        dbus:signal_subscribe(params.sender, params.interface, params.member, params.object_path, params.arg0, flags, callback_wrapper)
       end
     else
       local v = dbus[k]

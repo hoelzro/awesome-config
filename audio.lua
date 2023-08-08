@@ -129,7 +129,7 @@ do
 
         -- XXX these are always run on the main coroutine, it seems - should I make
         --     that not the case in donut.dbus? would that affect usage of naughty above?
-        callback = function(dbus_meta, changes)
+        callback = function(dbus_meta, _, changes)
           local sender = dbus_meta.sender_name
 
           donut.run(function()

@@ -84,6 +84,10 @@ local function attempt_pulse_connection()
   end)
 end
 
+local function is_unique_bus_name(name)
+  return string.sub(name, 1, 1) == ':'
+end
+
 do
   local pulse_bus
   local is_subscribed_mpris
@@ -178,6 +182,18 @@ do
             })
           end, function() end)
         end,
+      }
+
+      session_bus:subscribe {
+        object_path = '/org/freedesktop/DBus',
+        interface   = 'org.freedesktop.DBus',
+        member      = 'NameOwnerChanged',
+
+        callback = function(_, name, old_owner, new_owner)
+          if name == old_owner and is_unique_bus_name(name) and new_owner == '' then
+            print(string.format('it seems to me that %s has gotten off the bus', name))
+          end
+        end
       }
       is_subscribed_mpris = true
       -- XXX detect who, if anyone, is currently playing?

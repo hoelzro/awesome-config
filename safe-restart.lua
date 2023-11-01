@@ -58,6 +58,20 @@ local function safe_restart()
     }
   end
 
+  -- fix up borked tag assignments
+  do
+    local tags = root.tags()
+    local clients = client.get()
+
+    for i = 1, #clients do
+      local c = clients[i]
+      local ewmh_desktop = tonumber(c:get_xproperty '_NET_WM_DESKTOP')
+      if ewmh_desktop >= #tags then
+        c:set_xproperty('_NET_WM_DESKTOP', ewmh_desktop % #tags)
+      end
+    end
+  end
+
   if #broken_files == 0 then
     awesome.restart()
   end

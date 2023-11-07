@@ -5,6 +5,7 @@ local unpack = unpack or table.unpack
 
 local awful     = require 'awful'
 local beautiful = require 'beautiful'
+local spawn     = require 'awful.spawn'
 local wibox     = require 'wibox'
 local textclock = require 'wibox.widget.textclock'
 local calendar  = require 'awful.widget.calendar_popup'
@@ -153,7 +154,27 @@ mytasklist.buttons = awful.util.table.join(
   end))
 
 awful.screen.connect_for_each_screen(function(s)
-    mypromptbox[s] = awful.widget.prompt()
+    local promptbox
+
+    local function run_command(cmd)
+      local res
+
+      if cmd == 'slack' then
+        res = spawn.with_shell 'slack >/dev/null 2>/dev/null'
+      else
+        res = spawn(cmd)
+      end
+
+      if type(res) == 'string' then
+        promptbox.widget:set_text(res)
+      end
+    end
+
+    promptbox = awful.widget.prompt {
+      exe_callback = run_command,
+    }
+
+    mypromptbox[s] = promptbox
     mylayoutbox[s] = awful.widget.layoutbox(s)
     mylayoutbox[s]:buttons(awful.util.table.join(
                            awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),

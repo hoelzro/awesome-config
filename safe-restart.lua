@@ -41,7 +41,7 @@ local function safe_restart()
   local broken_files = {}
 
   for i = 1, #lua_config_files do
-    local _, stderr, _, status = easy_async { 'luac', '-p', config_dir .. '/' .. lua_config_files[i] }
+    local _, stderr, _, status = easy_async { 'luac5.3', '-p', config_dir .. '/' .. lua_config_files[i] }
     if status ~= 0 then
       broken_files[#broken_files + 1] = {lua_config_files[i], stderr}
     end
@@ -49,7 +49,7 @@ local function safe_restart()
 
   for i = 1, #broken_files do
     local broken_filename = broken_files[i][1]
-    local error_msg       = string.gsub(string.gsub(broken_files[i][2], '^%s*luac:%s*[^:]*:', ''), '%s+$', '')
+    local error_msg       = string.gsub(string.gsub(broken_files[i][2], '^%s*luac5%.3:%s*[^:]*:', ''), '%s+$', '')
 
     naughty.notify {
       title  = 'Refusing to restart - config parse errors',

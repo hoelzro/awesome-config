@@ -20,10 +20,16 @@ local function make_widget()
   }
 
   local function refresh()
-    local state = backend:state()
-    local r = make_renderer()
-    render(r, state)
-    w:set_markup(r:markup())
+    local state, err = backend:state()
+
+    if state then
+      local r = make_renderer()
+      render(r, state)
+      w:set_markup(r:markup())
+    else
+      w:set_text('Unable to get temperature state: ' .. tostring(err))
+    end
+
     return true
   end
 

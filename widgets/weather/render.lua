@@ -39,7 +39,7 @@ local function render_popup(r, previous_refresh_time, request_in_flight, state, 
     r:table {
       {'Sunrise:', os.date('%T', state.sunrise_time)},
       {'Sunset:', os.date('%T', state.sunset_time)},
-      {'Humidity:', string.format('%.0f%%', state.humidity_percent)},
+      {'Humidity:', state.humidity_percent and string.format('%.0f%%', state.humidity_percent) or '(unknown)'},
     }
   else
     r:printf('Error:             %s', err)

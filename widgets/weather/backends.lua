@@ -137,8 +137,8 @@ function weather_gov_backend:state()
   local temperature_celsius = res.properties.temperature.value
   assert(res.properties.temperature.unitCode == 'wmoUnit:degC', tostring(res.properties.temperature.unitCode))
 
-  -- XXX hardcoded TZ offset
-  local sunrise_time, sunset_time = calculate_sunrise_sunset(res.geometry.coordinates[2], res.geometry.coordinates[1], -6)
+  local tz_offset = tonumber(string.match(os.date '%z', '^([+-]?%d%d)00$'))
+  local sunrise_time, sunset_time = calculate_sunrise_sunset(res.geometry.coordinates[2], res.geometry.coordinates[1], tz_offset)
 
   local icon = 'unknown'
   if res.properties.icon then

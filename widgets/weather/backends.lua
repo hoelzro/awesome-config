@@ -131,6 +131,12 @@ function weather_gov_backend:detect()
 end
 
 function weather_gov_backend:state()
+  if not self._station_name then
+    local url = string.format('https://api.weather.gov/stations/%s', self.station)
+    local res = assert(self:_http_request(url))
+    self._station_name = res.properties.name
+  end
+
   local url = string.format('https://api.weather.gov/stations/%s/observations/latest?require_qc=true', self.station)
   local res = assert(self:_http_request(url))
 
@@ -149,7 +155,10 @@ function weather_gov_backend:state()
   local humidity = res.properties.relativeHumidity.value
   assert(res.properties.relativeHumidity.unitCode == 'wmoUnit:percent')
 
+  local station_details = string.format('%s (%s)', self.station, self._station_name)
+
   return {
+    station_details     = station_details,
     sunrise_time        = sunrise_time,
     sunset_time         = sunset_time,
     temperature_celsius = temperature_celsius,

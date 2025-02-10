@@ -54,7 +54,16 @@ local function sortedpairs(t)
   for k in pairs(t) do
     keys[#keys + 1] = k
   end
-  tsort(keys)
+  tsort(keys, function(a, b)
+    local type_a = type(a)
+    local type_b = type(b)
+
+    if type_a == type_b then
+      return a < b
+    else
+      return type_a < type_b
+    end
+  end)
 
   local index = 1
   return function()

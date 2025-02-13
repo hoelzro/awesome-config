@@ -25,7 +25,7 @@ local function render_widget(r, state, err)
 end
 
 local function render_popup(r, previous_refresh_time, request_in_flight, state, err)
-  if state.station_details then
+  if state and state.station_details then
     r:printf(state.station_details .. '\n')
   end
 

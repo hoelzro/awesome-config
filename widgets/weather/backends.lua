@@ -131,13 +131,15 @@ function weather_gov_backend:detect()
 end
 
 function weather_gov_backend:state()
+  local api_endpoint = string.match(self.api_endpoint or 'https://api.weather.gov', '(.*[^/])/?$')
+
   if not self._station_name then
-    local url = string.format('https://api.weather.gov/stations/%s', self.station)
+    local url = string.format('%s/stations/%s', api_endpoint, self.station)
     local res = assert(self:_http_request(url))
     self._station_name = res.properties.name
   end
 
-  local url = string.format('https://api.weather.gov/stations/%s/observations/latest?require_qc=true', self.station)
+  local url = string.format('%s/stations/%s/observations/latest?require_qc=true', api_endpoint, self.station)
   local res = assert(self:_http_request(url))
 
   local temperature_celsius = res.properties.temperature.value

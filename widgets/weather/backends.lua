@@ -175,6 +175,8 @@ function weather_gov_backend:_http_request(url)
     return nil, stream
   end
 
+  local status_code = headers:get ':status'
+
   local body, err = stream:get_body_as_string()
   if not body then
     return nil, err
@@ -182,7 +184,19 @@ function weather_gov_backend:_http_request(url)
 
   local res, _, err = json.decode(body)
   if not res then
-    return nil, err
+    if status_code == '200' then
+      return nil, err
+    else
+      if string.len(body) > 0 then
+        return nil, body
+      else
+        return nil, string.format('got HTTP response %s', status_code)
+      end
+    end
+  end
+
+  if status_code ~= '200' then
+    return nil, res.title or string.format('got HTTP response %s', status_code)
   end
 
   return res

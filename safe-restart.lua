@@ -3,6 +3,7 @@ local fs         = require 'gears.filesystem'
 local naughty    = require 'naughty'
 local lgi        = require 'lgi'
 local Gio        = lgi.require 'Gio'
+local unpack     = table.unpack or unpack
 
 awesome.register_xproperty('_NET_WM_DESKTOP', 'number')
 
@@ -13,10 +14,34 @@ local function ls(dir)
     local f = enum:next_file()
 
     if f then
-      return f:get_name()
+      return f:get_name(), f:get_file_type() == 'DIRECTORY'
     else
       enum:close()
     end
+  end
+end
+
+local function ls_recursive(dir)
+  local q = {{dir, true}}
+  local idx = 1
+
+  return function(s, v)
+    if idx > #q then
+      return
+    end
+
+    local filename, is_dir = unpack(q[idx])
+    idx = idx + 1
+
+    filename = string.gsub(filename, '/$', '')
+
+    if is_dir then
+      for child_filename, child_is_dir in ls(filename) do
+        q[#q + 1] = {filename .. '/' .. child_filename, child_is_dir}
+      end
+    end
+
+    return filename, is_dir
   end
 end
 
@@ -36,7 +61,7 @@ local function safe_restart()
 
   local lua_config_files = {}
 
-  for filename in ls(config_dir) do
+  for filename in ls_recursive(config_dir) do
     if string.sub(filename, -4) == '.lua' then
       lua_config_files[#lua_config_files + 1] = filename
     end
@@ -45,7 +70,7 @@ local function safe_restart()
   local broken_files = {}
 
   for i = 1, #lua_config_files do
-    local _, stderr, _, status = easy_async { 'luac5.3', '-p', config_dir .. '/' .. lua_config_files[i] }
+    local _, stderr, _, status = easy_async { 'luac5.3', '-p', lua_config_files[i] }
     if status ~= 0 then
       broken_files[#broken_files + 1] = {lua_config_files[i], stderr}
     end

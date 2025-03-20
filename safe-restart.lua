@@ -14,6 +14,8 @@ local function ls(dir)
 
     if f then
       return f:get_name()
+    else
+      enum:close()
     end
   end
 end

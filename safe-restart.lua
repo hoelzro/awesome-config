@@ -7,7 +7,7 @@ local Gio        = lgi.require 'Gio'
 awesome.register_xproperty('_NET_WM_DESKTOP', 'number')
 
 local function ls(dir)
-  local enum = Gio.File.new_for_path('/home/rob/.config/awesome/'):enumerate_children('', 0, nil, nil)
+  local enum = Gio.File.new_for_path(dir):enumerate_children('', 0, nil, nil)
 
   return function()
     local f = enum:next_file()

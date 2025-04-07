@@ -24,8 +24,10 @@ local function julian_date(t)
   return (1461 * (year + 4800 + (month - 14)/12))/4 + (367 * (month - 2 - 12 * ((month - 14)/12)))/12 - (3 * ((year + 4900 + (month - 14)/12)/100))/4 + day - 32075
 end
 
-local function calculate_sunrise_sunset(lat, lon, tz_offset)
-  local t = os.date '*t'
+local function calculate_sunrise_sunset(lat, lon, tz_offset, t)
+  if not t then
+    t = os.date '*t'
+  end
 
   local n = ceil(julian_date(t) - 2451545 + 0.0008)
 

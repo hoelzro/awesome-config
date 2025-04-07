@@ -40,37 +40,37 @@ local function calculate_sunrise_sunset(lat, lon, tz_offset, t)
   -- -0.83 is the "official" sunrise/sunset, rather than civil twilight or w/e
   local hour_angle = acos((sin(-0.83) - sin(lat) * sin(sun_declination)) / (cos(lat) * cos(sun_declination)))
 
-  local sunrise = solar_transit - hour_angle / 360
-  sunrise = sunrise - floor(sunrise)
-  sunrise = sunrise * 86400
-  sunrise = sunrise - tz_offset * 3600
-  if t.isdst then
-    sunrise = sunrise + 3600
-  end
-
-  sunrise = floor(sunrise + os.time {
+  -- our calculated times seem to be based off of noon UTC (GMT?), so figure out noon on our target date
+  -- in the local timezone…
+  local base_timestamp = os.time {
     year  = t.year,
     month = t.month,
     day   = t.day,
-    hour  = 0,
-    isdst = t.isdst,
-  })
+    hour  = 12,
+  }
+
+  -- …and then apply *our* timezone offset to figure out noon UTC
+  local local_tz_offset = tonumber(string.match(os.date('%z', base_timestamp), '^([+-]?%d%d)00$'))
+  base_timestamp = base_timestamp + local_tz_offset * 3600
+
+  local sunrise = solar_transit - hour_angle / 360
+  sunrise = sunrise - floor(sunrise)        -- get the fractions of a day part
+  sunrise = sunrise * 86400                 -- convert to seconds
+  sunrise = floor(sunrise + base_timestamp) -- add on top of noon UTC
+
+  -- sometimes the calculation gives us a timestamp that falls on the day after the target day - if
+  -- so, adjust accordingly
+  --
+  -- this might be calculating the sunrise time slightly wrong, but ¯\_(ツ)_/¯
+  local rollover_threshold = (12 - tz_offset) * 3600
+  if (sunrise - base_timestamp) > rollover_threshold then
+    sunrise = sunrise - 86400
+  end
 
   local sunset  = solar_transit + hour_angle / 360
-  sunset = sunset - floor(sunset)
-  sunset = sunset * 86400
-  sunset = sunset - tz_offset * 3600
-  if t.isdst then
-    sunset = sunset + 3600
-  end
-
-  sunset = floor(sunset + os.time {
-    year  = t.year,
-    month = t.month,
-    day   = t.day,
-    hour  = 0,
-    isdst = t.isdst,
-  })
+  sunset = sunset - floor(sunset)         -- get the fractions of a day part
+  sunset = sunset * 86400                 -- convert to seconds
+  sunset = floor(sunset + base_timestamp) -- add on top of noon UTC
 
   return sunrise, sunset
 end

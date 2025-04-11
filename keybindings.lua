@@ -188,6 +188,7 @@ globalkeys = awful.util.table.join(
     key({                   }, 'XF86MonBrightnessUp', raise_brightness),
     key({                   }, 'XF86ScreenSaver', function() awful.spawn 'xautolock -locknow' end),
     key({                   }, 'XF86Display', function() awful.spawn 'autorandr --change --default default' end),
+    key({                   }, 'Print', function() awful.spawn 'flameshot gui' end),
 
     key({ modkey,           }, "j",
         function ()

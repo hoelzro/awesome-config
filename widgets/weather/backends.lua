@@ -169,9 +169,35 @@ function weather_gov_backend:state()
   }
 end
 
-function weather_gov_backend:_http_request(url)
-  local headers, stream = http_request.new_from_uri(url):go(10)
+local MAX_TRIES = 4
+local TIMEOUT = 2
+
+local function startswith(s, prefix)
+  return string.sub(s, 1, #prefix) == prefix
+end
+
+local function endswith(s, suffix)
+  return string.sub(s, -1 * #suffix) == suffix
+end
+
+local function is_retryable(err)
+  if endswith(err, 'Connection timed out') then
+    return true
+  end
+
+  if startswith(err, 'got HTTP response 5') then
+    return true
+  end
+
+  return false
+end
+
+local function _make_single_request(url)
+  local headers, stream = http_request.new_from_uri(url):go(TIMEOUT)
   if not headers then
+    if not is_retryable(stream) then
+      stream = 'unable to make request: ' .. tostring(stream)
+    end
     return nil, stream
   end
 
@@ -179,27 +205,43 @@ function weather_gov_backend:_http_request(url)
 
   local body, err = stream:get_body_as_string()
   if not body then
+    if not is_retryable(err) then
+      err = 'unable to read body: ' .. tostring(err)
+    end
     return nil, err
   end
 
   local res, _, err = json.decode(body)
   if not res then
     if status_code == '200' then
-      return nil, err
+      return nil, 'unable to parse JSON for 200 response: ' .. tostring(err)
     else
-      if string.len(body) > 0 then
-        return nil, body
-      else
-        return nil, string.format('got HTTP response %s', status_code)
-      end
+      return nil, string.format('got HTTP response %s%s', status_code, tostring(body))
     end
   end
 
   if status_code ~= '200' then
-    return nil, res.title or string.format('got HTTP response %s', status_code)
+    return nil, string.format('got HTTP response %s (%s)', status_code, tostring(res.title))
   end
 
   return res
+end
+
+function weather_gov_backend:_http_request(url)
+  for try_num = 1, MAX_TRIES do
+    local res, err = _make_single_request(url)
+
+    if res then
+      return res
+    elseif is_retryable(err) then
+      local sleep_time = 2 ^ (try_num - 1)
+      cqueues.sleep(sleep_time)
+    else
+      return nil, err
+    end
+  end
+
+  return nil, 'max retries exceeded'
 end
 
 local canned_weather_gov_backend = setmetatable({}, {__index = weather_gov_backend})

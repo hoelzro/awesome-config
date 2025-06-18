@@ -88,6 +88,40 @@ function module.get_session_bus()
   end
 end
 
+local system_bus
+
+function module.get_system_bus()
+  if system_bus then
+    return system_bus
+  end
+
+  local p = promise.new()
+
+  local bus_address = os.getenv 'DBUS_SYSTEM_BUS_ADDRESS'
+  if not bus_address then
+    bus_address = 'unix:path=/var/run/dbus/system_bus_socket'
+  end
+
+  -- XXX observable/cancellable?
+  gio.DBusConnection.new_for_address(bus_address, gio.DBusConnectionFlags.AUTHENTICATION_CLIENT | gio.DBusConnectionFlags.MESSAGE_BUS_CONNECTION, nil, nil, function(dbus, res)
+    local res, err = gio.DBusConnection.new_for_address_finish(res)
+
+    if res then
+      p:set(true, res)
+    else
+      p:set(false, err)
+    end
+  end)
+
+  local ok, err_or_result = pcall(p.get, p)
+  if ok then
+    system_bus = dbus_wrapper(err_or_result)
+    return system_bus
+  else
+    return nil, err_or_result
+  end
+end
+
 function module.get_bus(addr)
   local p = promise.new()
 

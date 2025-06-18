@@ -11,10 +11,12 @@ local PRIMITIVE_VARIANT_TYPES = {
   d = true, -- double
   i = true, -- 32-bit signed int
   o = true, -- object path
+  q = true, -- 16-bit unsigned int
   s = true, -- string
   t = true, -- 64-bit unsigned int
   u = true, -- 32-bit unsigned int
   x = true, -- 64-bit int
+  y = true, -- 8-bit unsigned int
 }
 
 -- XXX only call me from dbus_call (why? I'm guessing due to the `return true` bit below and the

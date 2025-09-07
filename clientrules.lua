@@ -65,6 +65,15 @@ rules.rules = {
 
     {
         rule = {
+          instance = 'qemu',
+        },
+        properties = {
+          floating = true,
+        },
+    },
+
+    {
+        rule = {
             type = 'dialog',
         },
         properties = {

@@ -97,6 +97,7 @@ function fs_backend:new(options) -- {{{
 end -- }}}
 
 function fs_backend:state() -- {{{
+   -- XXX use read_first_line?
    local f, err = io.open(self.target, 'r')
    if not f then
      return nil, err

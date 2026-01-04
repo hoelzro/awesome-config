@@ -80,6 +80,45 @@ function sysfs_backend:new() -- {{{
 end -- }}}
 -- }}}
 
+-- {{{ ACPI Backend (sysfs + acpi_listen events)
+local object = require 'gears.object'
+local spawn = require 'awful.spawn'
+
+local acpi_backend = setmetatable({}, {__index = sysfs_backend})
+backends.acpi = acpi_backend
+
+local log = print
+
+function acpi_backend:new() -- {{{
+  local events = object()
+
+  local spawn_err = spawn.with_line_callback('acpi_listen', {
+    stdout = function(line)
+      if string.sub(line, 1, #'battery') == 'battery' then
+        events:emit_signal 'battery'
+      end
+    end,
+
+    exit = function(reason, exit_code)
+      log(sformat('acpi_listen exited due to %s (exit code = %d)', reason, exit_code))
+    end,
+  })
+
+  if type(spawn_err) == 'string' then
+    log('failed to spawn acpi_listen: ' .. spawn_err)
+  end
+
+  return setmetatable({
+    root = '/sys/class/power_supply/',
+    events = events,
+  }, {__index = acpi_backend})
+end -- }}}
+
+function acpi_backend:weak_connect_signal(signal, callback) -- {{{
+  return self.events:weak_connect_signal(signal, callback)
+end -- }}}
+-- }}}
+
 -- {{{ Raw Data Backend
 local raw_data_backend = {}
 backends.raw_data = raw_data_backend
@@ -122,6 +161,6 @@ end -- }}}
 -- XXX apcupsd backend?
 
 -- all members at integer indexes are "auto-discoverable"
-backends[#backends + 1] = sysfs_backend
+backends[#backends + 1] = acpi_backend
 
 return backends

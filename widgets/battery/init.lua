@@ -1,7 +1,6 @@
 local sformat = string.format
 
 local awful = require 'awful'
-local spawn = require 'awful.spawn'
 local wibox = require 'wibox'
 local timer = require 'gears.timer'
 
@@ -9,29 +8,8 @@ local backends = require 'widgets.battery.backends'
 local render = require 'widgets.battery.render'
 local make_renderer = require 'widgets.renderer'
 
-local backend = backends.sysfs:new()
+local backend = backends.acpi:new()
 local has_battery = backend:detect()
-
-local log = print
-
-local acpi_events = require('gears.object')()
-do
-  local spawn_err = spawn.with_line_callback('acpi_listen', {
-    stdout = function(line)
-      if string.sub(line, 1, #'battery') == 'battery' then
-        acpi_events:emit_signal 'battery'
-      end
-    end,
-
-    exit = function(reason, exit_code)
-      log(string.format('acpi_listen exited due to %s (exit code = %d)', reason, exit_code))
-    end,
-  })
-
-  if type(spawn_err) == 'string' then
-    log('failed to spawn acpi_listen: ' .. spawn_err)
-  end
-end
 
 local widgets = setmetatable({}, {__mode = 'k'})
 
@@ -82,7 +60,7 @@ local function make_widget()
   timer.weak_start_new(60, refresh)
   refresh()
 
-  acpi_events:weak_connect_signal('battery', refresh)
+  backend:weak_connect_signal('battery', refresh)
 
   w:buttons(awful.util.table.join(
     awful.button({}, 1, refresh)))

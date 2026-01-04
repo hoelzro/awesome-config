@@ -2,14 +2,15 @@
 --
 -- Usage from awesome-client:
 --   local mock = require 'widgets.battery.mock'
---   mock:plug_in()      -- Start charging
---   mock:unplug()       -- Start discharging
---   mock:set_rate(0.1)  -- Charge/discharge in 10 seconds
---   mock:set_charge(0.5)  -- Set charge to 50%
+--   mock:plug_in()       -- Start charging (with transient "not charging" state)
+--   mock:unplug()        -- Start discharging
+--   mock:set_rate(0.1)   -- Charge/discharge in 10 seconds
+--   mock:set_charge(0.5) -- Set charge to 50%
+--   mock:set_transient_duration(3) -- Set "not charging" duration to 3 seconds
 --
--- To use the mock backend with the battery widget, set:
---   require('widgets.battery.mock').use()
--- This will replace the default backend with the mock backend.
+-- The mock backend simulates real hardware behavior where plugging in
+-- initially reports "Not charging" for a few seconds before switching
+-- to "Charging". This allows testing the transient state handling.
 
 local backends = require 'widgets.battery.backends'
 
@@ -47,6 +48,10 @@ end
 
 function M:state()
   return M.get():state()
+end
+
+function M:set_transient_duration(duration)
+  return M.get():set_transient_duration(duration)
 end
 
 return M

@@ -128,6 +128,9 @@ backends.mock = mock_backend
 -- Default rate: full discharge in 10 minutes = 1/600 per second
 local DEFAULT_RATE = 1 / 600
 
+-- Default transient "not charging" duration in seconds (simulates real hardware behavior)
+local DEFAULT_TRANSIENT_DURATION = 2
+
 function mock_backend:new(options) -- {{{
   options = options or {}
 
@@ -138,6 +141,8 @@ function mock_backend:new(options) -- {{{
   local charge = options.initial_charge or 1.0
   local status = options.initial_status or 'Discharging'
   local rate = options.rate or DEFAULT_RATE
+  local transient_duration = options.transient_duration or DEFAULT_TRANSIENT_DURATION
+  local transient_timer = nil
 
   local instance = setmetatable({
     events = events,
@@ -157,11 +162,32 @@ function mock_backend:new(options) -- {{{
   end
 
   function instance:plug_in()
-    status = 'Charging'
+    -- Cancel any pending transient timer
+    if transient_timer then
+      transient_timer:stop()
+      transient_timer = nil
+    end
+
+    -- Simulate transient "Not charging" state like real hardware
+    status = 'Not charging'
     events:emit_signal 'battery'
+
+    -- After transient duration, switch to real "Charging" state
+    transient_timer = timer.start_new(transient_duration, function()
+      status = 'Charging'
+      events:emit_signal 'battery'
+      transient_timer = nil
+      return false -- don't repeat
+    end)
   end
 
   function instance:unplug()
+    -- Cancel any pending transient timer
+    if transient_timer then
+      transient_timer:stop()
+      transient_timer = nil
+    end
+
     status = 'Discharging'
     events:emit_signal 'battery'
   end
@@ -176,6 +202,10 @@ function mock_backend:new(options) -- {{{
 
   function instance:get_charge()
     return charge
+  end
+
+  function instance:set_transient_duration(duration)
+    transient_duration = duration
   end
 
   -- Timer to update charge level once per second

@@ -119,6 +119,95 @@ function acpi_backend:weak_connect_signal(signal, callback) -- {{{
 end -- }}}
 -- }}}
 
+-- {{{ Mock Backend (for testing)
+local timer = require 'gears.timer'
+
+local mock_backend = {}
+backends.mock = mock_backend
+
+-- Default rate: full discharge in 10 minutes = 1/600 per second
+local DEFAULT_RATE = 1 / 600
+
+function mock_backend:new(options) -- {{{
+  options = options or {}
+
+  local events = object()
+
+  -- energy_full is 100 "units" for simplicity; charge is in [0, 1]
+  local energy_full = 100
+  local charge = options.initial_charge or 1.0
+  local status = options.initial_status or 'Discharging'
+  local rate = options.rate or DEFAULT_RATE
+
+  local instance = setmetatable({
+    events = events,
+    _energy_full = energy_full,
+  }, {__index = mock_backend})
+
+  -- Expose mutable state via closures
+  function instance:state()
+    return {
+      {
+        status = status,
+        power_now = rate * energy_full,
+        energy_now = charge * energy_full,
+        energy_full = energy_full,
+      }
+    }
+  end
+
+  function instance:plug_in()
+    status = 'Charging'
+    events:emit_signal 'battery'
+  end
+
+  function instance:unplug()
+    status = 'Discharging'
+    events:emit_signal 'battery'
+  end
+
+  function instance:set_rate(new_rate)
+    rate = new_rate
+  end
+
+  function instance:set_charge(new_charge)
+    charge = math.max(0, math.min(1, new_charge))
+  end
+
+  function instance:get_charge()
+    return charge
+  end
+
+  -- Timer to update charge level once per second
+  local update_timer = timer.start_new(1, function()
+    if slower(status) == 'charging' then
+      charge = math.min(1, charge + rate)
+      if charge >= 1 then
+        status = 'Full'
+      end
+    elseif slower(status) == 'discharging' then
+      charge = math.max(0, charge - rate)
+    end
+    -- Emit signal so the widget updates
+    events:emit_signal 'battery'
+    return true
+  end)
+
+  -- Store timer reference to prevent GC
+  instance._update_timer = update_timer
+
+  return instance
+end -- }}}
+
+function mock_backend:detect() -- {{{
+  return true
+end -- }}}
+
+function mock_backend:weak_connect_signal(signal, callback) -- {{{
+  return self.events:weak_connect_signal(signal, callback)
+end -- }}}
+-- }}}
+
 -- {{{ Raw Data Backend
 local raw_data_backend = {}
 backends.raw_data = raw_data_backend

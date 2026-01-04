@@ -80,6 +80,164 @@ function sysfs_backend:new() -- {{{
 end -- }}}
 -- }}}
 
+-- {{{ ACPI Backend (sysfs + acpi_listen events)
+local object = require 'gears.object'
+local spawn = require 'awful.spawn'
+
+local acpi_backend = setmetatable({}, {__index = sysfs_backend})
+backends.acpi = acpi_backend
+
+local log = print
+
+function acpi_backend:new() -- {{{
+  local events = object()
+
+  local spawn_err = spawn.with_line_callback('acpi_listen', {
+    stdout = function(line)
+      if string.sub(line, 1, #'battery') == 'battery' then
+        events:emit_signal 'battery'
+      end
+    end,
+
+    exit = function(reason, exit_code)
+      log(sformat('acpi_listen exited due to %s (exit code = %d)', reason, exit_code))
+    end,
+  })
+
+  if type(spawn_err) == 'string' then
+    log('failed to spawn acpi_listen: ' .. spawn_err)
+  end
+
+  return setmetatable({
+    root = '/sys/class/power_supply/',
+    events = events,
+  }, {__index = acpi_backend})
+end -- }}}
+
+function acpi_backend:weak_connect_signal(signal, callback) -- {{{
+  return self.events:weak_connect_signal(signal, callback)
+end -- }}}
+-- }}}
+
+-- {{{ Mock Backend (for testing)
+local timer = require 'gears.timer'
+
+local mock_backend = {}
+backends.mock = mock_backend
+
+-- Default rate: full discharge in 10 minutes = 1/600 per second
+local DEFAULT_RATE = 1 / 600
+
+-- Default transient "not charging" duration in seconds (simulates real hardware behavior)
+local DEFAULT_TRANSIENT_DURATION = 2
+
+function mock_backend:new(options) -- {{{
+  options = options or {}
+
+  local events = object()
+
+  -- energy_full is 100 "units" for simplicity; charge is in [0, 1]
+  local energy_full = 100
+  local charge = options.initial_charge or 1.0
+  local status = options.initial_status or 'Discharging'
+  local rate = options.rate or DEFAULT_RATE
+  local transient_duration = options.transient_duration or DEFAULT_TRANSIENT_DURATION
+  local transient_timer = nil
+
+  local instance = setmetatable({
+    events = events,
+    _energy_full = energy_full,
+  }, {__index = mock_backend})
+
+  -- Expose mutable state via closures
+  function instance:state()
+    return {
+      {
+        status = status,
+        power_now = rate * energy_full,
+        energy_now = charge * energy_full,
+        energy_full = energy_full,
+      }
+    }
+  end
+
+  function instance:plug_in()
+    -- Cancel any pending transient timer
+    if transient_timer then
+      transient_timer:stop()
+      transient_timer = nil
+    end
+
+    -- Simulate transient "Not charging" state like real hardware
+    status = 'Not charging'
+    events:emit_signal 'battery'
+
+    -- After transient duration, switch to real "Charging" state
+    transient_timer = timer.start_new(transient_duration, function()
+      status = 'Charging'
+      events:emit_signal 'battery'
+      transient_timer = nil
+      return false -- don't repeat
+    end)
+  end
+
+  function instance:unplug()
+    -- Cancel any pending transient timer
+    if transient_timer then
+      transient_timer:stop()
+      transient_timer = nil
+    end
+
+    status = 'Discharging'
+    events:emit_signal 'battery'
+  end
+
+  function instance:set_rate(new_rate)
+    rate = new_rate
+  end
+
+  function instance:set_charge(new_charge)
+    charge = math.max(0, math.min(1, new_charge))
+  end
+
+  function instance:get_charge()
+    return charge
+  end
+
+  function instance:set_transient_duration(duration)
+    transient_duration = duration
+  end
+
+  -- Timer to update charge level once per second
+  local update_timer = timer.start_new(1, function()
+    if slower(status) == 'charging' then
+      charge = math.min(1, charge + rate)
+      if charge >= 1 then
+        status = 'Full'
+      end
+    elseif slower(status) == 'discharging' then
+      charge = math.max(0, charge - rate)
+    end
+    -- Emit signal so the widget updates
+    events:emit_signal 'battery'
+    return true
+  end)
+
+  -- Store timer reference to prevent GC
+  instance._update_timer = update_timer
+
+  return instance
+end -- }}}
+
+function mock_backend:detect() -- {{{
+  return true
+end -- }}}
+
+function mock_backend:weak_connect_signal(signal, callback) -- {{{
+  return self.events:weak_connect_signal(signal, callback)
+end -- }}}
+-- }}}
+
 -- {{{ Raw Data Backend
 local raw_data_backend = {}
 backends.raw_data = raw_data_backend
@@ -122,6 +280,6 @@ end -- }}}
 -- XXX apcupsd backend?
 
 -- all members at integer indexes are "auto-discoverable"
-backends[#backends + 1] = sysfs_backend
+backends[#backends + 1] = acpi_backend
 
 return backends

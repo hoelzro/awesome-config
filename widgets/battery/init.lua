@@ -62,8 +62,32 @@ local function make_widget()
   local blink_timer = timer.weak_start_new(1, blink_callback)
   blink_timer:stop()
 
+  local refresh_timer
+
   local function refresh()
     local state = backend:state()
+
+    local any_not_charging = false
+    local any_power_zero = false
+
+    for i = 1, #state do
+      local battery = state[i]
+
+      local status = string.lower(battery.status)
+
+      if status == 'not charging' then
+        any_not_charging = true
+      elseif status ~= 'full' and battery.power_now == 0 then
+        any_power_zero = true
+      end
+    end
+
+    local new_timeout = (any_not_charging or any_power_zero) and 1 or 60
+    if new_timeout ~= refresh_timer.timeout then
+      refresh_timer.timeout = new_timeout
+      refresh_timer:again()
+    end
+
     local r = make_renderer()
     render(r, state)
 
@@ -79,7 +103,7 @@ local function make_widget()
     return true
   end
 
-  timer.weak_start_new(60, refresh)
+  refresh_timer = timer.weak_start_new(60, refresh)
   refresh()
 
   acpi_events:weak_connect_signal('battery', refresh)

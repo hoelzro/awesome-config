@@ -98,6 +98,9 @@ require 'mousebindings'
 require 'keybindings'
 require 'clientrules'
 
+local spawn = require 'awful.spawn'
+local insert_unicode_char = require('unicode-input').insert_unicode_character
+
 -- don't consider scripts in my private
 -- files for tab completion
 local _, posix = pcall(require, 'posix')
@@ -131,3 +134,13 @@ end)
 screen.connect_signal('removed', function()
   collectgarbage 'collect'
 end)
+
+function emoji()
+  spawn.easy_async_with_shell('< /home/rob/.config/awesome/emoji.tsv rofi -dmenu', function(stdout)
+    local selected_emoji = string.match(stdout, '^[^\t]+\t([^\n]+)')
+    if not selected_emoji then
+      return
+    end
+    insert_unicode_char(selected_emoji)
+  end)
+end

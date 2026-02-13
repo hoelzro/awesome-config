@@ -9,6 +9,7 @@ local log = print
 local signal_object = require('gears.object')()
 local consecutive_failures = 0
 local last_spawn_time = 0
+local started = false
 
 local respawn_timer
 
@@ -59,16 +60,17 @@ end
 
 respawn_timer = timer {
   timeout   = 60,
-  autostart = true,
+  autostart = false,
   callback  = spawn_acpi_listen,
 }
 
 function acpi.weak_connect_signal(...)
+  if not started then
+    started = true
+    respawn_timer:start()
+    spawn_acpi_listen()
+  end
   return signal_object:weak_connect_signal(...)
 end
-
--- we can't use call_now to just call spawn_acpi_listen, because that call is synchronous, and
--- respawn_timer hasn't been set yet!
-spawn_acpi_listen()
 
 return acpi

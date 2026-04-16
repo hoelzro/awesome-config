@@ -35,7 +35,6 @@ modkey           = "Mod1"
 terminal         = "urxvt"
 editor           = os.getenv("EDITOR") or "vim"
 editor_cmd       = terminal .. " -e " .. editor
-volume_delta     = 5
 
 local naughty = require 'naughty'
 -- shortcut for naughty.notify

@@ -173,8 +173,10 @@ globalkeys = awful.util.table.join(
       end
     end),
 
-    key({                   }, "XF86AudioRaiseVolume", function() audio.louder(volume_delta) end),
-    key({                   }, "XF86AudioLowerVolume", function() audio.quieter(volume_delta) end),
+    key({                   }, "XF86AudioRaiseVolume", function() audio.louder(5) end),
+    key({                   }, "XF86AudioLowerVolume", function() audio.quieter(5) end),
+    key({                   }, "F23", function() audio.quieter(1) end),
+    key({                   }, "F24", function() audio.louder(1) end),
     key({                   },        "XF86AudioMute", audio.togglemute),
 
     key({                   },        "XF86AudioNext", audio.next),
@@ -243,8 +245,8 @@ globalkeys = awful.util.table.join(
     key({ modkey, 'Shift' }, "Right", audio.next),
     key({ modkey, 'Shift' }, "Left", audio.previous),
     key({ modkey, 'Shift' }, "Down", audio.toggle),
-    key({ modkey, 'Shift' }, "KP_Add", function() audio.louder(volume_delta) end),
-    key({ modkey, 'Shift' }, "KP_Subtract", function() audio.quieter(volume_delta) end),
+    key({ modkey, 'Shift' }, "KP_Add", function() audio.louder(5) end),
+    key({ modkey, 'Shift' }, "KP_Subtract", function() audio.quieter(5) end),
 
     key({ modkey }, 'u', function()
       awful.prompt.run {

@@ -61,7 +61,8 @@ function module.get_session_bus()
     return session_bus
   end
 
-  local bus_address = os.getenv 'DBUS_SESSION_BUS_ADDRESS'
+  local bus_address = os.getenv 'DONUT_DBUS_SESSION_BUS_ADDRESS'
+    or os.getenv 'DBUS_SESSION_BUS_ADDRESS'
   if not bus_address then
     return nil, 'Unable to determine session bus address'
   end

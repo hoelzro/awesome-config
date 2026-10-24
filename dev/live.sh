@@ -11,11 +11,18 @@ DEV_DIR=$(cd "$(dirname "$0")" && pwd)
 CONFIG_DIR=$(cd "$DEV_DIR/.." && pwd)
 RC=${RC:-$DEV_DIR/screenshot-rc.lua}
 SCREEN=${SCREEN:-1280x30}
+HOST_SESSION_BUS_ADDRESS=${DONUT_DBUS_SESSION_BUS_ADDRESS:-${DBUS_SESSION_BUS_ADDRESS:-}}
 
 fail() {
   echo "awesome-live: $*" >&2
   exit 1
 }
+
+if [[ -n $HOST_SESSION_BUS_ADDRESS ]]; then
+  export DONUT_DBUS_SESSION_BUS_ADDRESS=$HOST_SESSION_BUS_ADDRESS
+else
+  echo "awesome-live: warning: no host session bus; MPRIS will be unavailable" >&2
+fi
 
 for command in Xephyr awesome awesome-client dbus-run-session inotifywait; do
   command -v "$command" >/dev/null || {
@@ -110,6 +117,9 @@ WATCHER_PID=$FILE_WATCHER_PID
 WATCHER_FD=${FILE_WATCHER[0]}
 
 echo "awesome-live: watching $CONFIG_DIR on $DISPLAY_NUM ($SCREEN)"
+if [[ -n $HOST_SESSION_BUS_ADDRESS ]]; then
+  echo "awesome-live: widget services use the host D-Bus session"
+fi
 echo "awesome-live: press Ctrl-C to stop"
 
 while kill -0 "$AWESOME_PID" 2>/dev/null && kill -0 "$XEPHYR_PID" 2>/dev/null; do

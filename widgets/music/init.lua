@@ -56,6 +56,7 @@ local function make_widget()
     return {
       playback_state = client:status(),
       current_track  = client:trackinfo(),
+      position       = client:position(),
     }
   end
 
@@ -127,6 +128,19 @@ local function make_widget()
     refresh()
   end)
 
+  local handle_seeked = donut_wrapper(function(_, position, signal_metadata)
+    local sender = signal_metadata.sender
+
+    if not player_states[sender] then
+      player_states[sender] = init_player_state(sender)
+    end
+
+    player_states[sender].last_update = os.time()
+    player_states[sender].position = position
+
+    refresh()
+  end)
+
   local function handle_gone(_, sender)
     player_states[sender] = nil
   end
@@ -141,11 +155,13 @@ local function make_widget()
 
   backend:weak_connect_signal('trackchange', handle_trackchange)
   backend:weak_connect_signal('playbackstatus', handle_playbackstatus)
+  backend:weak_connect_signal('seeked', handle_seeked)
   backend:weak_connect_signal('gone', handle_gone)
 
   widgets[top_widget] = {
     handle_trackchange,
     handle_playbackstatus,
+    handle_seeked,
     handle_gone,
   }
 

@@ -87,6 +87,10 @@ function backends.mpris:client(addr)
     return extract_trackinfo(proxy:Get('org.mpris.MediaPlayer2.Player', 'Metadata'))
   end
 
+  function client:position()
+    return proxy:Get('org.mpris.MediaPlayer2.Player', 'Position')
+  end
+
   return client
 end
 -- }}}
@@ -154,6 +158,10 @@ function tail_f_methods:client()
   end
 
   function client:trackinfo()
+    error 'NYI'
+  end
+
+  function client:position()
     error 'NYI'
   end
 

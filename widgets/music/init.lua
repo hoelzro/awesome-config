@@ -2,6 +2,7 @@ local awful = require 'awful'
 local wibox = require 'wibox'
 
 local donut = require 'donut'
+local timer = require 'gears.timer'
 
 local backends = require 'widgets.music.backends'
 
@@ -48,6 +49,10 @@ local function make_widget()
     layout = wibox.layout.fixed.horizontal,
   }
 
+  -- XXX should this bundle with last_update?
+  local prev_position_update
+  local position_timer
+
   local player_states = {}
 
   local function init_player_state(client_addr)
@@ -75,6 +80,13 @@ local function make_widget()
     local player = current_playing or latest_paused
 
     if player then
+      if player.playback_state == 'playing' and not position_timer.started then
+        prev_position_update = math.floor(os.time() * 1000000)
+        position_timer:again()
+      elseif player.playback_state ~= 'playing' and position_timer.started then
+        position_timer:stop()
+      end
+
       icon_widget:set_markup('<b>' .. ICONS[player.playback_state] .. '</b>')
       if player.current_track.artist ~= '' then
         song_widget:set_text(string.format('%s - %s',
@@ -112,6 +124,8 @@ local function make_widget()
 
     player_states[sender].last_update = os.time()
     player_states[sender].current_track = trackinfo
+    prev_position_update = math.floor(os.time() * 1000000)
+    player_states[sender].position = 0
 
     refresh()
   end)
@@ -125,6 +139,7 @@ local function make_widget()
 
     player_states[sender].last_update = os.time()
     player_states[sender].playback_state = status
+    prev_position_update = math.floor(os.time() * 1000000)
     refresh()
   end)
 
@@ -137,6 +152,7 @@ local function make_widget()
 
     player_states[sender].last_update = os.time()
     player_states[sender].position = position
+    prev_position_update = math.floor(os.time() * 1000000)
 
     refresh()
   end)
@@ -144,6 +160,30 @@ local function make_widget()
   local function handle_gone(_, sender)
     player_states[sender] = nil
   end
+
+  local function position_timer_callback()
+    local now = math.floor(os.time() * 1000000)
+    local dt = now - prev_position_update
+    prev_position_update = now
+
+    local current_playing
+
+    for _, player in pairs(player_states) do
+      if player.playback_state == 'playing' and (not current_playing or current_playing.last_update < player.last_update) then
+        current_playing = player
+      end
+    end
+
+    if current_playing then
+      current_playing.position = current_playing.position + dt
+      refresh()
+    end
+
+    return true
+  end
+
+  --[[local]] position_timer = timer.weak_start_new(1, position_timer_callback)
+  position_timer:stop()
 
   refresh()
 
@@ -163,6 +203,7 @@ local function make_widget()
     handle_playbackstatus,
     handle_seeked,
     handle_gone,
+    position_timer_callback,
   }
 
   return top_widget

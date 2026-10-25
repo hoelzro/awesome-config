@@ -185,6 +185,17 @@ do
       }
 
       session_bus:subscribe {
+        object_path = '/org/mpris/MediaPlayer2',
+        interface   = 'org.mpris.MediaPlayer2.Player',
+        member      = 'Seeked',
+        callback = function(dbus_meta, position)
+          mpris_signal_object:emit_signal('seeked', position, {
+            sender = dbus_meta.sender_name,
+          })
+        end
+      }
+
+      session_bus:subscribe {
         object_path = '/org/freedesktop/DBus',
         interface   = 'org.freedesktop.DBus',
         member      = 'NameOwnerChanged',

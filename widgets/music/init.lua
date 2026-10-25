@@ -51,9 +51,11 @@ local function make_widget()
   local player_states = {}
 
   local function init_player_state(client_addr)
+    local client = backend:client(client_addr)
+
     return {
-      playback_state = 'stopped',
-      current_track  = {},
+      playback_state = client:status(),
+      current_track  = client:trackinfo(),
     }
   end
 

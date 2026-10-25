@@ -1,7 +1,11 @@
 local awful = require 'awful'
 local wibox = require 'wibox'
 
+local donut = require 'donut'
+
 local backends = require 'widgets.music.backends'
+
+local unpack = unpack or table.unpack
 
 local log = print
 
@@ -82,7 +86,21 @@ local function make_widget()
     end
   end
 
-  local function handle_trackchange(_, trackinfo, signal_metadata)
+  local function donut_wrapper(f)
+    return function(...)
+      local arg_count = select('#', ...)
+      local args = {...}
+      donut.run(function()
+        f(unpack(args, 1, arg_count))
+      end, function(ok, err)
+        if not ok then
+          log(err)
+        end
+      end)
+    end
+  end
+
+  local handle_trackchange = donut_wrapper(function(_, trackinfo, signal_metadata)
     local sender = signal_metadata.sender
 
     if not player_states[sender] then
@@ -93,9 +111,9 @@ local function make_widget()
     player_states[sender].current_track = trackinfo
 
     refresh()
-  end
+  end)
 
-  local function handle_playbackstatus(_, status, signal_metadata)
+  local handle_playbackstatus = donut_wrapper(function(_, status, signal_metadata)
     local sender = signal_metadata.sender
 
     if not player_states[sender] then
@@ -105,7 +123,7 @@ local function make_widget()
     player_states[sender].last_update = os.time()
     player_states[sender].playback_state = status
     refresh()
-  end
+  end)
 
   local function handle_gone(_, sender)
     player_states[sender] = nil

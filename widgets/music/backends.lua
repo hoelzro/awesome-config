@@ -21,6 +21,31 @@ function backends.mpris:previous_track()
   return require('audio').previous()
 end
 
+local function extract_trackinfo(metadata)
+  local trackinfo = {}
+
+  if metadata['xesam:album'] then
+    -- XXX handle empty string
+    trackinfo.album = metadata['xesam:album']
+  end
+
+  if metadata['xesam:artist'] then
+    -- XXX handle empty string
+    trackinfo.artist = metadata['xesam:artist'][1]
+  end
+
+  if metadata['xesam:title'] then
+    -- XXX handle empty string
+    trackinfo.title = metadata['xesam:title']
+  end
+
+  if metadata['mpris:length'] then
+    trackinfo.duration = metadata['mpris:length']
+  end
+
+  return trackinfo
+end
+
 -- trackchange callbacks are wrapped for a little extra processing, but since I'm using
 -- weak_connect_signal the wrapper function doesn't end up with any strong references,
 -- causing the GC to come for it.  This table here (which stores original callback → wrapper)
@@ -36,24 +61,7 @@ function backends.mpris:weak_connect_signal(signal, callback)
       local orig_callback = callback
 
       function callback(obj, metadata, ...)
-        local trackinfo = {}
-
-        if metadata['xesam:album'] then
-          -- XXX handle empty string
-          trackinfo.album = metadata['xesam:album']
-        end
-
-        if metadata['xesam:artist'] then
-          -- XXX handle empty string
-          trackinfo.artist = metadata['xesam:artist'][1]
-        end
-
-        if metadata['xesam:title'] then
-          -- XXX handle empty string
-          trackinfo.title = metadata['xesam:title']
-        end
-
-        return orig_callback(obj, trackinfo, ...)
+        return orig_callback(obj, extract_trackinfo(metadata), ...)
       end
 
       trackchange_callback_wrappers[orig_callback] = callback
@@ -103,24 +111,7 @@ function backends.tail_f:new(filename)
       end
 
       if changes.Metadata then
-        local trackinfo = {}
-
-        if changes.Metadata['xesam:album'] then
-          -- XXX handle empty string
-          trackinfo.album = changes.Metadata['xesam:album']
-        end
-
-        if changes.Metadata['xesam:artist'] then
-          -- XXX handle empty string
-          trackinfo.artist = changes.Metadata['xesam:artist'][1]
-        end
-
-        if changes.Metadata['xesam:title'] then
-          -- XXX handle empty string
-          trackinfo.title = changes.Metadata['xesam:title']
-        end
-
-        backend:emit_signal('trackchange', trackinfo)
+        backend:emit_signal('trackchange', extract_trackinfo(changes.Metadata))
       end
     end,
 

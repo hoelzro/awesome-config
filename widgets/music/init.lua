@@ -46,6 +46,13 @@ local function make_widget()
 
   local player_states = {}
 
+  local function init_player_state(client_addr)
+    return {
+      playback_state = 'stopped',
+      current_track  = {},
+    }
+  end
+
   local function refresh()
     local current_playing
     local latest_paused
@@ -77,10 +84,10 @@ local function make_widget()
 
   local function handle_trackchange(_, trackinfo, signal_metadata)
     local sender = signal_metadata.sender
-    player_states[sender] = player_states[sender] or {
-      playback_state = 'stopped',
-      current_track  = {},
-    }
+
+    if not player_states[sender] then
+      player_states[sender] = init_player_state(sender)
+    end
 
     player_states[sender].last_update = os.time()
     player_states[sender].current_track = trackinfo
@@ -90,10 +97,10 @@ local function make_widget()
 
   local function handle_playbackstatus(_, status, signal_metadata)
     local sender = signal_metadata.sender
-    player_states[sender] = player_states[sender] or {
-      playback_state = 'stopped',
-      current_track  = {},
-    }
+
+    if not player_states[sender] then
+      player_states[sender] = init_player_state(sender)
+    end
 
     player_states[sender].last_update = os.time()
     player_states[sender].playback_state = status

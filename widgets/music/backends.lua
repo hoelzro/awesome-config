@@ -1,3 +1,5 @@
+local donut = require 'donut'
+
 local log = print
 
 local backends = {}
@@ -70,6 +72,23 @@ function backends.mpris:weak_connect_signal(signal, callback)
 
   return require('audio').weak_connect_signal(signal, callback)
 end
+
+function backends.mpris:client(addr)
+  local session_bus = assert(donut.get_session_bus())
+  local proxy = assert(session_bus:proxy(addr, '/org/mpris/MediaPlayer2'))
+
+  local client = {}
+
+  function client:status()
+    return string.lower(proxy:Get('org.mpris.MediaPlayer2.Player', 'PlaybackStatus'))
+  end
+
+  function client:trackinfo()
+    return extract_trackinfo(proxy:Get('org.mpris.MediaPlayer2.Player', 'Metadata'))
+  end
+
+  return client
+end
 -- }}}
 
 -- {{{ tail -f backend
@@ -125,6 +144,20 @@ function backends.tail_f:new(filename)
   end
 
   return backend
+end
+
+function tail_f_methods:client()
+  local client = {}
+
+  function client:status()
+    error 'NYI'
+  end
+
+  function client:trackinfo()
+    error 'NYI'
+  end
+
+  return client
 end
 
 function tail_f_methods:playpause()

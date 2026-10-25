@@ -40,13 +40,28 @@ local function make_widget()
     fps         = 1,
   }
 
+  local song_progress_widget = wibox.widget {
+    max_value        = 1,
+    value            = 0,
+    forced_height    = 2,
+    forced_width     = 0,
+    color            = '#729fcf',
+    background_color = '#00000000',
+
+    widget = wibox.widget.progressbar,
+  }
+
   -- XXX lay out declaratively and then populate locals by looking them up?
   local top_widget = wibox.widget {
-    icon_widget,
-    marquee_widget,
+    {
+      icon_widget,
+      marquee_widget,
 
-    spacing = 3, -- XXX use fontmetrics to calculate spacing?
-    layout = wibox.layout.fixed.horizontal,
+      spacing = 3, -- XXX use fontmetrics to calculate spacing?
+      layout = wibox.layout.fixed.horizontal,
+    },
+    song_progress_widget,
+    layout = wibox.layout.fixed.vertical,
   }
 
   -- XXX should this bundle with last_update?
@@ -80,6 +95,7 @@ local function make_widget()
     local player = current_playing or latest_paused
 
     if player then
+      song_progress_widget:set_value(player.position / player.current_track.duration)
       if player.playback_state == 'playing' and not position_timer.started then
         prev_position_update = math.floor(os.time() * 1000000)
         position_timer:again()

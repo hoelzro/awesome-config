@@ -154,6 +154,21 @@ do
               -- XXX different API for this?
               interfaces = {
                 {
+                  name = 'org.freedesktop.DBus.Properties',
+                  methods = {
+                    {
+                      name          = 'Get',
+                      parameters    = {
+                        { name = 'interface_name', type = 's' },
+                        { name = 'property_name', type = 's' },
+                      },
+                      return_values = {
+                        { name = 'value', type = 'v' },
+                      },
+                    },
+                  },
+                },
+                {
                   name = 'org.mpris.MediaPlayer2.Player',
                   methods = {
                     {
